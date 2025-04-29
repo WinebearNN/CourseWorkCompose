@@ -2,7 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.dagger.hilt.android") // Плагин Hilt
-    kotlin("kapt") // добавляем плагин для ObjectBox
+    kotlin("kapt")
+    alias(libs.plugins.kotlin.compose) // добавляем плагин для ObjectBox
 }
 
 android {
@@ -53,6 +54,11 @@ android {
 
 dependencies {
 
+    //Coil image for compose
+    implementation(libs.coil.compose)
+
+    //lottie animation
+    implementation (libs.lottie.compose)
 
 /////ObjectBox
     implementation(libs.objectbox.android) // проверь последнюю версию
@@ -61,14 +67,13 @@ dependencies {
 
 /////Hilt & viewModel compose
 
-    implementation("androidx.compose.material:material:1.7.8") // или последняя версия
+    implementation(libs.androidx.material) // или последняя версия
 
 
-    implementation("io.coil-kt:coil-compose:2.2.2")
 
     implementation(libs.hilt.android.v2511) // Hilt
     kapt(libs.hilt.android.compiler.v2511) // Компилятор Hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")// Для поддержки ViewModel в Compose
+    implementation(libs.androidx.hilt.navigation.compose)// Для поддержки ViewModel в Compose
 
 
     // https://mvnrepository.com/artifact/com.getkeepsafe.relinker/relinker

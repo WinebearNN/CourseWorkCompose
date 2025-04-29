@@ -1,12 +1,9 @@
 package com.hse.courseworkcompose.domain.useCase
 
-import com.hse.courseworkcompose.domain.entity.User
 import com.hse.courseworkcompose.domain.repository.UserRepository
-import com.hse.courseworkcompose.utills.CheckValidation.Companion.isValidEmail
-import com.hse.courseworkcompose.utills.CheckValidation.Companion.isValidPassword
-import com.hse.courseworkcompose.utills.ErrorCode
-import com.hse.courseworkcompose.utills.ErrorException
-import com.hse.courseworkcompose.utills.GlobalError
+import com.hse.courseworkcompose.util.CheckValidation
+import com.hse.courseworkcompose.util.Error
+import com.hse.courseworkcompose.util.ErrorCode
 import javax.inject.Inject
 
 class RegistrationUseCase @Inject constructor(private val userRepository: UserRepository) {
@@ -15,28 +12,38 @@ class RegistrationUseCase @Inject constructor(private val userRepository: UserRe
         private const val TAG = "RegisterUserUseCase"
     }
 
-    suspend fun execute(user: User): Result<Unit> {
-        val globalErrors = mutableListOf<GlobalError>()
+    suspend fun execute(email: String,password: String,name:String,phoneNumber:String): Result<Unit> {
+        val globalErrors = mutableListOf<ErrorCode>()
 
-        validateUser(user, globalErrors)
+        validateUser(email=email,password=password, phoneNumber = phoneNumber,globalErrors)
 
         if (globalErrors.isNotEmpty()) {
-            return Result.failure(ErrorException(globalErrors))
+            return Result.failure(Error(globalErrors))
         }
 
-        return userRepository.register(user)
+        return userRepository.register(
+            email=email,
+            password=password,
+            name=name,
+            phoneNumber=phoneNumber
+        )
     }
 
-    private fun validateUser(user: User, globalErrors: MutableList<GlobalError>) {
-        if (!isValidEmail(user.email)) {
-            globalErrors.add(GlobalError(100, ErrorCode.CODE_100.description))
+    private fun validateUser(email:String,password:String,phoneNumber: String, globalErrors: MutableList<ErrorCode>) {
+        if (!CheckValidation.Companion.isValidEmail(email)) {
+            globalErrors.add(ErrorCode.ERROR_101)
         }
 
+        // Валидация пароля
+        if (!CheckValidation.Companion.isValidPassword(password)) {
+            globalErrors.add(ErrorCode.ERROR_102)
+        }
 
-        if (!isValidPassword(user.password)) {
-            globalErrors.add(GlobalError(101, ErrorCode.CODE_101.description))
+        if (!CheckValidation.Companion.isValidPhoneNumber(phoneNumber = phoneNumber)) {
+            globalErrors.add(ErrorCode.ERROR_103)
         }
     }
+
 
 
 }

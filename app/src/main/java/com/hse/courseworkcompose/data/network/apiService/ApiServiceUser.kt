@@ -1,7 +1,7 @@
 package com.hse.courseworkcompose.data.network.apiService
 
-import com.hse.courseworkcompose.data.network.ApiResponse
-import com.hse.courseworkcompose.data.network.RegisterUserRequest
+import com.hse.courseworkcompose.util.ApiResponse
+import com.hse.courseworkcompose.data.network.request.UserRequest
 import com.hse.courseworkcompose.domain.entity.User
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -11,10 +11,12 @@ import retrofit2.http.Path
 interface ApiServiceUser {
 
     @POST("/user/registration/")
-    suspend fun registerUser(@Body request: RegisterUserRequest): ApiResponse
+    suspend fun registerUser(@Body request: UserRequest): ApiResponse
 
-    @GET("/user/get/email/{email}")
-    suspend fun getUserByEmail(@Path("email") email: String): ApiResponse
+
+    @POST("/user/get/email/{email}")
+    suspend fun logIn(@Body request: UserRequest): ApiResponse
+
 
     @POST("/user/update/")
     suspend fun updateUserData(@Body user: User): ApiResponse
@@ -24,4 +26,7 @@ interface ApiServiceUser {
 
     @GET("/user/get/id/{id}")
     suspend fun getUserById(@Path("id") globalId:String): ApiResponse
+
+    @GET("/user/get/name/{name}")
+    suspend fun getUsersByName(@Path("name") name:String): ApiResponse
 }

@@ -1,58 +1,77 @@
 package com.hse.courseworkcompose.presentation.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    // Основные цвета
+    primary = White,
+    onPrimary = Black,
+    secondary = Color(0xFF0F2954),  // Синий
+    onSecondary = White,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    // Третичные/дополнительные цвета
+    tertiary = TextGray,
+    onTertiary = Black,
+
+    // Контейнеры и поверхности
+    primaryContainer = White,  // Светло-серый
+    onPrimaryContainer = Color(0xFFA2A9B8),  // Серый текст
+    surface = White,
+    onSurface = Black,
+    surfaceVariant = White,
+    onSurfaceVariant = Black,
+
+    error = Color.Red,
+    // Фон и контуры
+    background = Color(0xFFF4F4F5),
+    onBackground = Black,
+    outline = Color(0xFF204FC7),  // Синий
+    outlineVariant = Color(0xFF0F2954)
+)
+
+private val DarkColorScheme = darkColorScheme(
+    // Основные цвета
+    primary = Black,
+    onPrimary = White,
+    secondary = Color(0xFF6393F7),  // Синий (как в светлой теме)
+    onSecondary = White,
+
+    // Третичные/дополнительные цвета
+    tertiary = LightGray,  // Для текста
+    onTertiary = DarkGray,
+
+    // Контейнеры и поверхности
+    primaryContainer = Gray,  // Темно-серые объекты
+    onPrimaryContainer = LightGray,
+    surface = DarkGray,
+    onSurface = White,
+    surfaceVariant = DarkGray,
+    onSurfaceVariant = LightGray,
+
+    error = Color.Red,
+
+    // Фон и контуры
+    background = DarkGray,
+    onBackground = White,  // Весь текст светлый
+    outline = Color(0xFF204FC7),  // Синий (как в светлой теме)
+    outlineVariant = Color(0xFF6393F7)
 )
 
 @Composable
-fun CourseWorkComposeTheme(
+fun HSEprojectTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
         content = content
     )
 }

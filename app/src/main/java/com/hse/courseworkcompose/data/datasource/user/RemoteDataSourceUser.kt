@@ -3,12 +3,19 @@ package com.hse.courseworkcompose.data.datasource.user
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.hse.courseworkcompose.data.network.RegisterUserRequest
+import com.google.gson.reflect.TypeToken
+import com.hse.courseworkcompose.util.ApiResponse
 import com.hse.courseworkcompose.data.network.apiService.ApiServiceUser
+import com.hse.courseworkcompose.data.network.request.UserRequest
 import com.hse.courseworkcompose.domain.entity.User
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+
+private const val MAX_RETRIES = 3
+private const val RETRY_DELAY_MS = 10_000L // 10 секунд
 
 class RemoteDataSourceUser @Inject constructor(
     private val apiServiceUser: ApiServiceUser
@@ -20,15 +27,36 @@ class RemoteDataSourceUser @Inject constructor(
         private const val TAG = "RemoteDataSourceUser"
     }
 
-    suspend fun registerUser(user: User): Result<String> = withContext(Dispatchers.IO) {
+
+
+    suspend fun registerUser(
+        email: String,
+        password: String,
+        name: String,
+        phoneNumber: String
+    ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            val request = RegisterUserRequest(
-                email = user.email,
-                password = user.password,
-                userName = user.userName
+            val request = UserRequest(
+                email = email,
+                password = password,
+                name = name,
+                phoneNumber = phoneNumber
             )
             Log.i(TAG, "User for request $request")
-            val response = apiServiceUser.registerUser(request)
+//            var response = apiServiceUser.registerUser(request)
+            val response = ApiResponse(
+                success = true,
+                message = """{
+                    "globalId": 1,
+                    "email": "vvzimin@hse.edu.ru",
+                    "password": "1234567",
+                    "name": "Владимир",
+                    "interest": "Волейбол, рыбалка, хоккей",
+                    "phoneNumber":"89524705200",
+                    "link": "@winebear",
+                    "friends": []
+                }"""
+            )
             if (response.success) response.message else throw Exception("Registration failed: ${response.message}")
         }.onFailure { e ->
             Log.e(TAG, "An error occurred during registration", e)
@@ -48,20 +76,16 @@ class RemoteDataSourceUser @Inject constructor(
         }
     }
 
-    suspend fun getUserByEmail(user: User): Result<User> = withContext(Dispatchers.IO) {
+    suspend fun login(email: String,password:String): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            val response = apiServiceUser.getUserByEmail(user.email)
-            if (response.success) {
-                val userResponse = gson.fromJson(response.message, User::class.java)
-                if (user.password == userResponse.password) userResponse
-                else throw Exception("Invalid password")
-            } else {
-                throw Exception("Failed to get user: ${response.message}")
-            }
-        }.onSuccess {
-            Log.d(TAG, "User fetched successfully: ${it.email}")
+            val request = UserRequest(
+                email = email,
+                password = password,
+            )
+            val response = apiServiceUser.logIn(request)
+            if (response.success) response.message else throw Exception("Authorization failed: ${response.message}")
         }.onFailure { e ->
-            Log.e(TAG, "An error occurred while fetching the user", e)
+            Log.e(TAG, "An error occurred during authorization", e)
         }
     }
 
@@ -80,19 +104,47 @@ class RemoteDataSourceUser @Inject constructor(
             }
         }
 
+
+
     suspend fun getUserById(globalId: String): Result<User> = withContext(Dispatchers.IO) {
-        runCatching {
-            val response = apiServiceUser.getUserById(globalId)
-            if (response.success) {
-                val userResponse = gson.fromJson(response.message, User::class.java)
-                userResponse
-            } else {
-                throw Exception("Failed to get user by id:${response.message}")
+        var currentRetry = 0
+        var lastException: Exception? = null
+
+        while (currentRetry < MAX_RETRIES) {
+            try {
+                val response = apiServiceUser.getUserById(globalId)
+                if (response.success) {
+                    return@withContext Result.success(gson.fromJson(response.message, User::class.java))
+                } else {
+                    lastException = Exception("Server error: ${response.message}")
+                }
+            } catch (e: Exception) {
+                lastException = e
+                Log.w(TAG, "Attempt ${currentRetry + 1} failed", e)
             }
-        }.onFailure { e ->
-            Log.e(TAG, "An error occurred while getting user by id", e)
+
+            if (currentRetry < MAX_RETRIES - 1) {
+                delay(RETRY_DELAY_MS)
+            }
+            currentRetry++
         }
 
+        Result.failure(lastException ?: Exception("Unknown error"))
+    }
+
+    suspend fun getUsersByName(name:String): Result<List<User>> = withContext(Dispatchers.IO){
+        runCatching {
+            val response=apiServiceUser.getUsersByName(name)
+            if(response.success){
+                val typeJson = object : TypeToken<List<User>>() {}.type
+                val usersResponse: List<User> = gson.fromJson(response.message, typeJson)
+                usersResponse
+            }else{
+                throw Exception("Failed to get users by name:${response.message}")
+            }
+        }.onFailure { e ->
+            Log.e(TAG,"An error occered while getting list of users by name",e)
+        }
     }
 
 

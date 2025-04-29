@@ -1,12 +1,10 @@
 package com.hse.courseworkcompose.domain.entity
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.converter.PropertyConverter
-import io.objectbox.relation.ToMany
+import java.sql.Time
 
 @Entity
 data class User(
@@ -14,39 +12,22 @@ data class User(
     var globalId: Long = 0,
     var email: String = "",
     var password: String = "",
-    var userName: String = "",
-    var interest: String = "",
-    var link: String = "",
-    @Convert(converter = FriendConverter::class, dbType = String::class)
-    var friends: List<Friend> = emptyList()
+    var name: String = "",
+    var surname:String = "",
+    var phoneNumber:String ="",
+    var dob: Long = 0,
+    @Convert(converter = CountryConverter::class, dbType = String::class)
+    var country: Country = Country.Russia
 )
 
-class FriendConverter : PropertyConverter<List<Friend>, String> {
-    private val gson = Gson()
-
-    override fun convertToDatabaseValue(entityProperty: List<Friend>?): String {
-        return gson.toJson(entityProperty ?: emptyList<Friend>())
+class CountryConverter : PropertyConverter<Country, String> {
+    override fun convertToEntityProperty(databaseValue: String?): Country {
+        return if (databaseValue == null) Country.Russia
+        else Country.valueOf(databaseValue)
     }
 
-    override fun convertToEntityProperty(databaseValue: String?): List<Friend> {
-        return if (databaseValue.isNullOrEmpty()) {
-            emptyList()
-        } else {
-            gson.fromJson(databaseValue, object : TypeToken<List<Friend>>() {}.type)
-        }
+    override fun convertToDatabaseValue(entityProperty: Country?): String {
+        return entityProperty?.name ?: Country.Russia.name
     }
 }
 
-// Конвертер для хранения Set<Int> как JSON в String
-class InterestConverter : PropertyConverter<MutableSet<Int>, String> {
-    private val gson = Gson()
-
-    override fun convertToDatabaseValue(entityProperty: MutableSet<Int>?): String {
-        return gson.toJson(entityProperty ?: emptySet<Int>())
-    }
-
-    override fun convertToEntityProperty(databaseValue: String?): MutableSet<Int> {
-        val type = object : TypeToken<MutableSet<Int>>() {}.type
-        return gson.fromJson(databaseValue ?: "[]", type) ?: mutableSetOf()
-    }
-}

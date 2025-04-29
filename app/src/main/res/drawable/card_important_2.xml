@@ -1,0 +1,50 @@
+<!--AFAFAF-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="561dp"
+    android:height="355dp"
+    android:viewportWidth="561"
+    android:viewportHeight="355">
+  <path
+      android:pathData="M30,1L531,1A29,29 0,0 1,560 30L560,325A29,29 0,0 1,531 354L30,354A29,29 0,0 1,1 325L1,30A29,29 0,0 1,30 1z"
+      android:strokeWidth="2"
+      android:fillColor="#CFCFCF">
+    <aapt:attr name="android:strokeColor">
+      <gradient 
+          android:startX="0"
+          android:startY="153.67"
+          android:endX="561"
+          android:endY="177.5"
+          android:type="linear">
+        <item android:offset="0.01" android:color="#51FFFFFF"/>
+        <item android:offset="1" android:color="#5EFBFBFB"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <group>
+    <clip-path
+        android:pathData="M30,0L531,0A30,30 0,0 1,561 30L561,325A30,30 0,0 1,531 355L30,355A30,30 0,0 1,0 325L0,30A30,30 0,0 1,30 0z"/>
+    <path
+        android:pathData="M546.93,-104.51m240.04,-27.94a241.66,241.66 128.36,1 1,-480.08 55.88a241.66,241.66 128.36,1 1,480.08 -55.88"
+        android:strokeWidth="0.92"
+        android:fillColor="#00000000"
+        android:strokeColor="#AAAAAA"/>
+    <path
+        android:pathData="M463.85,-66.93m240.04,-27.94a241.66,241.66 128.36,1 1,-480.08 55.88a241.66,241.66 128.36,1 1,480.08 -55.88"
+        android:strokeWidth="0.92"
+        android:fillColor="#00000000"
+        android:strokeColor="#AAAAAA"/>
+    <path
+        android:pathData="M353.69,-54.11m240.04,-27.94a241.66,241.66 128.36,1 1,-480.08 55.88a241.66,241.66 128.36,1 1,480.08 -55.88"
+        android:strokeWidth="0.92"
+        android:fillColor="#00000000"
+        android:strokeColor="#AAAAAA"/>
+  </group>
+  <path
+      android:strokeWidth="1"
+      android:pathData="M33,278.16L523,278.16"
+      android:strokeAlpha="0.32"
+      android:fillColor="#00000000"
+      android:strokeColor="#0F0F0F"/>
+</vector>

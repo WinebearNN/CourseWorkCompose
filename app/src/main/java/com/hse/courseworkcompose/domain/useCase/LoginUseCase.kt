@@ -2,12 +2,8 @@ package com.hse.courseworkcompose.domain.useCase
 
 import com.hse.courseworkcompose.domain.repository.UserRepository
 import javax.inject.Inject
-import com.hse.courseworkcompose.domain.entity.User
-import com.hse.courseworkcompose.utills.CheckValidation.Companion.isValidEmail
-import com.hse.courseworkcompose.utills.CheckValidation.Companion.isValidPassword
-import com.hse.courseworkcompose.utills.ErrorCode
-import com.hse.courseworkcompose.utills.ErrorException
-import com.hse.courseworkcompose.utills.GlobalError
+import com.hse.courseworkcompose.util.ErrorCode
+import com.hse.courseworkcompose.util.*
 
 
 class LoginUseCase @Inject constructor(private val userRepository: UserRepository) {
@@ -16,25 +12,30 @@ class LoginUseCase @Inject constructor(private val userRepository: UserRepositor
         private const val TAG = "LoginUserUseCase"
     }
 
-    suspend fun execute(user: User): Result<User> {
-        val globalErrors = mutableListOf<GlobalError>()
+    suspend fun execute(email:String,password:String): Result<Unit> {
+        val globalErrors = mutableListOf<ErrorCode>()
 
-        validateUser(user, globalErrors)
+        validateUser(email,password, globalErrors)
 
+        // Если есть ошибки, возвращаем их
         if (globalErrors.isNotEmpty()) {
-            return Result.failure(ErrorException(globalErrors))
+            return Result.failure(Error(globalErrors))
         }
 
-        return userRepository.loginUserByEmail(user)
+        // Вызов метода для входа пользователя
+        return userRepository.login(email,password)
     }
 
-    private fun validateUser(user: User, globalErrors: MutableList<GlobalError>) {
-        if (!isValidEmail(user.email)) {
-            globalErrors.add(GlobalError(100, ErrorCode.CODE_100.description))
+    // Валидация пользователя
+    private fun validateUser(email:String,password:String, globalErrors: MutableList<ErrorCode>) {
+        // Валидация email
+        if (!CheckValidation.Companion.isValidEmail(email)) {
+            globalErrors.add(ErrorCode.ERROR_101)
         }
 
-        if (!isValidPassword(user.password)) {
-            globalErrors.add(GlobalError(101, ErrorCode.CODE_101.description))
+        // Валидация пароля
+        if (!CheckValidation.Companion.isValidPassword(password)) {
+            globalErrors.add(ErrorCode.ERROR_102)
         }
     }
 
