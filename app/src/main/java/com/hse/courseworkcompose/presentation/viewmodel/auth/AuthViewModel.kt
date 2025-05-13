@@ -25,7 +25,6 @@ class AuthViewModel @Inject constructor(
     val authResult: StateFlow<AuthResult> = _authResult.asStateFlow()
 
 
-    // Для автоматической авторизации (например, при открытии приложения)
     fun auth() {
         viewModelScope.launch {
             _authResult.value = AuthResult.Loading
@@ -35,11 +34,7 @@ class AuthViewModel @Inject constructor(
                         _authResult.value = AuthResult.UserSuccess(user = user)
                     },
                     onFailure = { userError ->
-
-
                         _authResult.value = AuthResult.Error(userError)
-
-
                     }
                 )
         }

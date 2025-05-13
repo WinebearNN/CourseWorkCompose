@@ -1,6 +1,5 @@
 package com.hse.courseworkcompose.presentation.ui.profile
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,13 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -40,21 +36,30 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.hse.courseworkcompose.R
+import com.hse.courseworkcompose.domain.entity.LoyaltyCard
+import com.hse.courseworkcompose.domain.entity.User
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
-fun ProfileScreenTemp(
+fun ProfileScreen(
     navController: NavController,
 ) {
 
     val gradientColors = listOf(
-        Color(0xE60F0F0F),  // #0F0F0F с opacity 90%
-        Color(0xFF151515)   // #151515
+        Color(0xE60F0F0F),
+        Color(0xFF151515)
     )
 
-    val context = LocalContext.current
+//TODO connect ViewModel
+    val loyaltyCard = LoyaltyCard()
+    val user=User(
+        name = "Владимир",
+        surname = "Зимин",
+        dateOfBirth = 1123012800000,
+        phoneNumber = "89524705200"
+    )
 
-//    val colorScheme = MaterialTheme.colorScheme
-//    val isDarkTheme = isSystemInDarkTheme()
 
     val scrollState = rememberScrollState()
 
@@ -65,12 +70,7 @@ fun ProfileScreenTemp(
                 color = Color(0xFFF4F4F5)
             )
     ) {
-//        Image(
-//            imageVector = ImageVector.vectorResource(R.drawable.rainbow_vortex________),
-//            contentDescription = "Android",
-//            modifier = Modifier
-//                .fillMaxSize()
-//        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -86,8 +86,8 @@ fun ProfileScreenTemp(
                     .height(250.dp)
             ) {
                 Image(
-                    imageVector = ImageVector.vectorResource(R.drawable.card_premium),
-                    contentDescription = "Красная звезда",
+                    imageVector = ImageVector.vectorResource(loyaltyCard.loyaltyLevel.drawableId),
+                    contentDescription = "Карта лояльности",
                     modifier = Modifier
                         .fillMaxHeight()
                 )
@@ -111,7 +111,7 @@ fun ProfileScreenTemp(
                                 )
                                 .wrapContentWidth(),
                             color = Color.Black,
-                            text = "Владимир Зимин",
+                            text = "${user.name} ${user.surname}",
                             fontSize = 21.sp,
                             fontWeight = FontWeight.Bold,
                             style = TextStyle(
@@ -130,7 +130,7 @@ fun ProfileScreenTemp(
                                 )
                                 .wrapContentWidth(),
                             color = Color(0xF0F0F0F),
-                            text = "89524705200",
+                            text = user.phoneNumber,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             style = TextStyle(
@@ -156,7 +156,8 @@ fun ProfileScreenTemp(
                                 )
                                 .wrapContentSize(),
                             color = Color(0xFF0F0F0F),
-                            text = "03/08/2005",
+                            text = (SimpleDateFormat("dd/MM/yyyy")
+                                    .format(Date(user.dateOfBirth))),
                             fontSize = 16.sp
                         )
                     }
@@ -174,42 +175,27 @@ fun ProfileScreenTemp(
                                 .weight(1f),
                             alignment = Alignment.BottomEnd,
                             bitmap = ImageBitmap.imageResource(R.drawable.qr_code_test),
-                            contentDescription = "Зимний лес"
+                            contentDescription = "qr код"
                         )
 
-//                        Spacer(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                        )
 
                         Text(
                             modifier = Modifier
                                 .padding(
-//                                top = 20.dp,
                                     end = 25.dp,
                                     bottom = 25.dp
                                 )
                                 .wrapContentSize(),
-                            text = "Important: 20%",
+                            text = "${loyaltyCard.loyaltyLevel.level}: ${(loyaltyCard.loyaltyLevel.saleAmount*100).toInt()}%",
                             textAlign = TextAlign.Center,
                             color = Color(0xFF0F0F0F),
                             fontSize = 16.sp,
-//                            fontWeight = FontWeight.Bold
                         )
 
                     }
                 }
 
             }
-//            Spacer(
-//                modifier = Modifier
-//                    .padding(
-//                        top=20.dp
-//                    )
-//                    .height(6.dp)
-//                    .fillMaxWidth()
-//                    .background(Color.LightGray)
-//            )
 
             Column(
                 modifier = Modifier
@@ -225,44 +211,36 @@ fun ProfileScreenTemp(
                 Chapter(
                     text = "Заказы",
                     icon = ImageVector.vectorResource(R.drawable.orders)
-                )
+                ){}
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Промокоды",
                     icon = ImageVector.vectorResource(R.drawable.promocode)
-                )
+                ){}
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Возвраты",
                     icon = ImageVector.vectorResource(R.drawable.returns)
-                )
+                ){}
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Сертификаты",
                     icon = ImageVector.vectorResource(R.drawable.certificates)
-                )
+                ){}
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Способы оплаты",
                     icon = ImageVector.vectorResource(R.drawable.card)
-                )
+                ){}
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Понравившееся",
                     icon = ImageVector.vectorResource(R.drawable.like)
-                )
+                ){
+                    navController.navigate("favourite") {
+                        launchSingleTop = true
+                    }
+                }
 
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Страна",
                     icon = ImageVector.vectorResource(R.drawable.country)
-                )
+                ){}
 
 
             }
@@ -281,25 +259,17 @@ fun ProfileScreenTemp(
                         end = 20.dp,
                     )
             ) {
-//                Text(
-//                    modifier = Modifier
-//                        .padding(),
-//                    text = "Поддержка",
-//                    fontSize = 18.sp,
-//                    fontWeight = FontWeight.Bold
-//                )
+
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Позвоните нам",
                     icon = ImageVector.vectorResource(R.drawable.support)
-                )
+                ){}
                 Chapter(
-//                    modifier = Modifier
-//                        .padding(5.dp),
                     text = "Часто задаваемые вопросы",
                     icon = ImageVector.vectorResource(R.drawable.question)
-                )
+                ){
+
+                }
                 Spacer(
                     modifier = Modifier
                         .height(20.dp)
@@ -316,9 +286,15 @@ fun ProfileScreenTemp(
 fun Chapter(
     modifier: Modifier = Modifier,
     text: String,
-    icon: ImageVector
+    icon: ImageVector,
+    onClick: () -> Unit
 ) {
-    Column() {
+    Column(
+        modifier= Modifier
+            .clickable(
+                onClick = onClick
+            )
+    ) {
         Spacer(
             modifier = Modifier
                 .height(1.dp)
@@ -339,8 +315,6 @@ fun Chapter(
                 imageVector = icon,
                 contentDescription = text,
                 modifier = modifier
-//                    .padding(start = 16.dp)
-//                    .clickable(true, onClick = {})
                     .size(24.dp)
             )
             Text(
@@ -358,56 +332,12 @@ fun Chapter(
 }
 
 
-@Composable
-fun GradientCircleBackground() {
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        // Основной фон
-        drawRect(color = Color(0xFFFF9D00), size = size)
 
-        // Параметры для кругов
-        val center = Offset(size.width / 2, size.height / 2)
-        val maxRadius = size.maxDimension * 1.5f
-        val strokeWidth = size.maxDimension * 0.0139f // Примерно 66.7 для 1600x800
-
-        // Цвета кругов (в порядке от внешнего к внутреннему)
-        val colors = listOf(
-            Color(0xFFFF9D00),
-            Color(0xFFF27D00),
-            Color(0xFFE55F00),
-            Color(0xFFD84400),
-            Color(0xFFCB2C00),
-            Color(0xFFBF1600),
-            Color(0xFFB20300),
-            Color(0xFFA5000E),
-            Color(0xFF98001C),
-            Color(0xFF8B0027),
-            Color(0xFF7E0030),
-            Color(0xFF710037),
-            Color(0xFF64003B),
-            Color(0xFF58003C),
-            Color(0xFF4B003A),
-            Color(0xFF3E0037),
-            Color(0xFF310030),
-            Color(0xFF210024)
-        )
-
-        // Рисуем круги
-        colors.forEachIndexed { index, color ->
-            val radius = maxRadius - (index * 100f * (maxRadius / 1800f))
-            drawCircle(
-                color = color,
-                radius = radius,
-                center = center,
-                style = Stroke(width = strokeWidth)
-            )
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewProfileScreen() {
-    ProfileScreenTemp(navController = rememberNavController())
+    ProfileScreen(navController = rememberNavController())
 }
 
 

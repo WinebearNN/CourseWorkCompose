@@ -1,5 +1,7 @@
 package com.hse.courseworkcompose.domain.repository
 
+import com.hse.courseworkcompose.domain.entity.LoyaltyCard
+import com.hse.courseworkcompose.domain.entity.LoyaltyLevel
 import com.hse.courseworkcompose.domain.entity.User
 
 interface UserRepository {
@@ -12,4 +14,5 @@ interface UserRepository {
     suspend fun refreshUserData(): Result<User>
     suspend fun logout()
     suspend fun getUsers(name:String):Result<List<User>>
+    suspend fun getLoyaltyCard(userGlobalId:Long): Result<LoyaltyCard>
 }

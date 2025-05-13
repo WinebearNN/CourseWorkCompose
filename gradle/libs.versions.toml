@@ -1,9 +1,9 @@
 [versions]
-agp = "8.8.0"
+agp = "8.9.2"
 coilCompose = "3.1.0"
 converterGson = "2.11.0"
 googleHiltAndroid = "2.55"
-gradle = "8.2.2"
+gradle = "8.9.2"
 lottieCompose = "6.3.0"
 hiltAndroid = "2.55"
 hiltAndroidCompiler = "2.55"

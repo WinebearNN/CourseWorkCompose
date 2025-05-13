@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.hse.courseworkcompose.util.ApiResponse
 import com.hse.courseworkcompose.data.network.apiService.ApiServiceUser
 import com.hse.courseworkcompose.data.network.request.UserRequest
+import com.hse.courseworkcompose.domain.entity.LoyaltyCard
 import com.hse.courseworkcompose.domain.entity.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -104,7 +105,22 @@ class RemoteDataSourceUser @Inject constructor(
             }
         }
 
-
+    suspend fun getLoyaltyLevel(userGlobalId:Long): Result<LoyaltyCard> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiServiceUser.getLoyaltyCard(userGlobalId.toString())
+                if (response.success) {
+                    gson.fromJson(response.message, LoyaltyCard::class.java)
+                }
+                else {
+                    throw Exception("Failed to upload user's avatar: ${response.message}")
+                }
+            }.onSuccess {
+                Log.d(TAG, "Loyalty card level was received successfully")
+            }.onFailure { e ->
+                Log.e(TAG, "An error occurred while getting the loyalty card level", e)
+            }
+        }
 
     suspend fun getUserById(globalId: String): Result<User> = withContext(Dispatchers.IO) {
         var currentRetry = 0

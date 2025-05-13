@@ -6,6 +6,8 @@ import io.objectbox.Box
 import io.objectbox.BoxStore
 import javax.inject.Inject
 import com.hse.courseworkcompose.domain.entity.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class LocalDataSourceUser @Inject constructor(
     boxStore: BoxStore
@@ -16,40 +18,39 @@ class LocalDataSourceUser @Inject constructor(
         private const val TAG = "LocalDataSourceUser"
     }
 
-    fun removeAll(){
+    suspend fun removeAll() = withContext(Dispatchers.IO) {
         userBox.removeAll()
     }
 
-    fun updateUserData(user: User){
+    suspend fun updateUserData(user: User) = withContext(Dispatchers.IO) {
         userBox.removeAll()
         userBox.put(user)
     }
-    fun getAllUsers(): MutableList<User>? {
-        Log.i(TAG,"All users: ${userBox.all}");
-        return userBox.all
+
+    suspend fun getAllUsers(): MutableList<User>? = withContext(Dispatchers.IO) {
+        Log.i(TAG, "All users: ${userBox.all}");
+        userBox.all
     }
 
-    fun saveUser(user:User){
+    suspend fun saveUser(user: User) = withContext(Dispatchers.IO) {
         userBox.put(user)
-        Log.i(TAG,"User was saved: $user")
+        Log.i(TAG, "User was saved: $user")
     }
 
-    fun removeUser(user: User){
-        Log.i(TAG,"User was removed: $user")
+    suspend fun removeUser(user: User) = withContext(Dispatchers.IO) {
+        Log.i(TAG, "User was removed: $user")
         userBox.remove(user)
     }
 
-    fun getUser(id:Long):User?{
-        Log.i(TAG,"User was taken: ${userBox.get(id)}")
-        return userBox.get(id)
+    suspend fun getUser(id: Long): User? = withContext(Dispatchers.IO) {
+        Log.i(TAG, "User was taken: ${userBox.get(id)}")
+        userBox.get(id)
     }
 
-    fun contains(id:Long):Boolean{
-        Log.i(TAG,"Is user contains: ${userBox.contains(id)}")
-        return userBox.contains(id)
+    suspend fun contains(id: Long): Boolean = withContext(Dispatchers.IO) {
+        Log.i(TAG, "Is user contains: ${userBox.contains(id)}")
+        userBox.contains(id)
     }
-
-
 
 
 }

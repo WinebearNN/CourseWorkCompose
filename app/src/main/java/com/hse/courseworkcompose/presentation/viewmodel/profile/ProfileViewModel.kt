@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hse.courseworkcompose.domain.entity.LoyaltyCard
 import com.hse.courseworkcompose.domain.entity.User
 import com.hse.courseworkcompose.domain.useCase.ProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,19 +30,38 @@ class ProfileViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
 
+    private val _loyaltyCard = MutableStateFlow<LoyaltyCard>(LoyaltyCard())
+    val loyaltyCard: StateFlow<LoyaltyCard> get() = _loyaltyCard
+
     private val _logoutFlag = MutableStateFlow<Boolean?>(null)
-    val logoutFlag: StateFlow<Boolean?> get()=_logoutFlag
+    val logoutFlag: StateFlow<Boolean?> get() = _logoutFlag
 
     private val _loadingAvatar = MutableStateFlow<Boolean?>(null)
     val loadingAvatar: StateFlow<Boolean?> get() = _loadingAvatar
 
 
-//    private val _linkFlag = MutableLiveData<Boolean>()
-//    val linkFlag: LiveData<Boolean> get() = _linkFlag
-
     init {
         loadLocalUserData()
         refreshUserData()
+    }
+
+    private fun getLoyaltyCard() {
+        viewModelScope.launch {
+            runCatching {
+                _user.value.let { profileUseCase.getLoyaltyCard(it!!.globalId) }
+            }.fold(
+                onSuccess = { result ->
+                    result.onSuccess { card ->
+                        _loyaltyCard.value = card
+                    }.onFailure { error ->
+                        Log.e(TAG, "Server returned error: $error")
+                    }
+                },
+                onFailure = { error ->
+                    Log.e(TAG, "Network error while loading loyalty card: $error", error)
+                }
+            )
+        }
     }
 
     private fun refreshUserData() {

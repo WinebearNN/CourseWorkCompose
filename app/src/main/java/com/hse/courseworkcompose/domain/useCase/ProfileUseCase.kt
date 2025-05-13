@@ -1,5 +1,6 @@
 package com.hse.courseworkcompose.domain.useCase
 
+import com.hse.courseworkcompose.domain.entity.LoyaltyCard
 import com.hse.courseworkcompose.domain.entity.User
 import com.hse.courseworkcompose.domain.repository.UserRepository
 import javax.inject.Inject
@@ -13,6 +14,9 @@ class ProfileUseCase @Inject constructor(private val userRepository: UserReposit
         return userRepository.authUser()
     }
 
+    suspend fun getLoyaltyCard(userGlobalId:Long): Result<LoyaltyCard> {
+        return userRepository.getLoyaltyCard(userGlobalId)
+    }
     suspend fun refreshUserData(): Result<User> {
         return userRepository.refreshUserData()
     }

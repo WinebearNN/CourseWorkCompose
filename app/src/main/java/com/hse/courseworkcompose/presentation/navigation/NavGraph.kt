@@ -5,8 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.hse.courseworkcompose.presentation.ui.authentication.AuthenticationScreen
+import com.hse.courseworkcompose.presentation.ui.home.HomeScreen
 import com.hse.courseworkcompose.presentation.ui.logIn.LogInScreen
-import com.hse.courseworkcompose.presentation.ui.profile.ProfileScreenTemp
+import com.hse.courseworkcompose.presentation.ui.profile.ProfileScreen
 
 
 @Composable
@@ -16,7 +17,7 @@ fun AppNavGraph(navController: NavHostController) {
         startDestination = "authentication"
     ) {
         composable(NavigationScreen.Profile.route) {
-            ProfileScreenTemp(navController)
+            ProfileScreen(navController)
         }
 //        composable(NavigationScreen.Settings.route) {
 //            Sett(navController)
@@ -28,9 +29,10 @@ fun AppNavGraph(navController: NavHostController) {
             LogInScreen(navController)
         }
 
-//        composable(NavigationScreen.Error.route) {
-//            ErrorScreen(navController)
-//        }
+
+        composable(NavigationScreen.Home.route) {
+            HomeScreen(navController)
+        }
         composable(NavigationScreen.Authentication.route) {
             AuthenticationScreen(navController)
         }

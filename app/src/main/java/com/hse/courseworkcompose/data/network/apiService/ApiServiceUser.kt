@@ -29,4 +29,8 @@ interface ApiServiceUser {
 
     @GET("/user/get/name/{name}")
     suspend fun getUsersByName(@Path("name") name:String): ApiResponse
+
+    @GET("/user/get/loyalty/{userGlobalId}")
+    suspend fun getLoyaltyCard(@Path("userGlobalId") userGlobalId:String): ApiResponse
+
 }

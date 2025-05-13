@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.hse.courseworkcompose.data.datasource.user.LocalDataSourceUser
 import com.hse.courseworkcompose.data.datasource.user.RemoteDataSourceUser
 import com.hse.courseworkcompose.data.network.response.UserResponse
+import com.hse.courseworkcompose.domain.entity.LoyaltyCard
 import com.hse.courseworkcompose.domain.entity.User
 import com.hse.courseworkcompose.domain.repository.UserRepository
 
@@ -58,6 +59,10 @@ class UserRepositoryImpl @Inject constructor(
         return remoteDataSourceUser.getUsersByName(name)
     }
 
+    override suspend fun getLoyaltyCard(userGlobalId: Long): Result<LoyaltyCard> {
+        return remoteDataSourceUser.getLoyaltyLevel(userGlobalId)
+    }
+
 
     override suspend fun register(
         email: String,
@@ -83,7 +88,7 @@ class UserRepositoryImpl @Inject constructor(
             password = userResponse.password,
             surname = userResponse.surname,
             name = userResponse.name,
-            dob = userResponse.dob,
+            dateOfBirth = userResponse.dob,
             country = userResponse.country,
             phoneNumber = userResponse.phoneNumber
         )
@@ -100,7 +105,7 @@ class UserRepositoryImpl @Inject constructor(
         val result = remoteDataSourceUser.login(email, password)
         if (result.isSuccess) {
             val userResponse = Gson().fromJson<UserResponse>(
-                result.getOrNull()!!,
+                result.getOrNull(),
                 UserResponse::class.java
             )
             val user = User(
@@ -109,7 +114,7 @@ class UserRepositoryImpl @Inject constructor(
                 password = userResponse.password,
                 surname = userResponse.surname,
                 name = userResponse.name,
-                dob = userResponse.dob,
+                dateOfBirth = userResponse.dob,
                 country = userResponse.country,
                 phoneNumber = userResponse.phoneNumber
             )
