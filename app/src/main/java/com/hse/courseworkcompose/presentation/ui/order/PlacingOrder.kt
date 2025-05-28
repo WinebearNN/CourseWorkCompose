@@ -72,9 +72,7 @@ fun PlacingOrderScreen(
     navController: NavController
 ) {
 
-    LaunchedEffect(Unit) {
-        viewModel.getAdvertisement(advertisementId)
-    }
+
 
 
     val advertisement = viewModel.advertisement.collectAsState()
@@ -442,7 +440,7 @@ fun PlacingOrderScreen(
                                 )
                             Text(
                                 text = "- " + NumberFormat.getNumberInstance(Locale.getDefault())
-                                    .format(advertisement.value!!.price*(1-advertisement.value!!.sellerDiscount)*loyaltyCard.value!!.loyaltyLevel.saleAmount) + " ₽",
+                                    .format((advertisement.value!!.price*(1-advertisement.value!!.sellerDiscount)*loyaltyCard.value!!.loyaltyLevel.saleAmount).toInt()) + " ₽",
                                 fontSize = 16.sp,
                                 letterSpacing = 0.5.sp,
                                 color = Color(0xFFEB3131),

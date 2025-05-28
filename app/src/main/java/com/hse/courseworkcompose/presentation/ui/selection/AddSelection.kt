@@ -220,9 +220,9 @@ fun AddSelectionScreen(
                             userGlobalId = userId.value.toLong(),
                             name = nameSelection,
                             description = descriptionSelection,
-                        )
+                        ),
+                        navController = navController
                     )
-                    navController.popBackStack()
                 },
                 border = BorderStroke(
                     width = 1.dp,

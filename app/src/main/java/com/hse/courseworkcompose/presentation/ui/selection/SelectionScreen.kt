@@ -28,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,6 +57,16 @@ fun PersonalSelectionScreen(
     val loading = viewModel.loading.collectAsState()
 
     val context = LocalContext.current
+
+    val selectionCreatedFlow = navController.currentBackStackEntry?.savedStateHandle?.getStateFlow("selectionCreated", false)
+    val selectionCreated = selectionCreatedFlow?.collectAsState() ?: remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectionCreated) {
+        if (selectionCreated.value) {
+            viewModel.loadData(context)
+            navController.currentBackStackEntry?.savedStateHandle?.set("selectionCreated", false)
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadData(context)

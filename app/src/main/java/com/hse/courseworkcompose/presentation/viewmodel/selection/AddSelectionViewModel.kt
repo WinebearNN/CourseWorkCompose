@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.hse.courseworkcompose.domain.entity.Selection
 import com.hse.courseworkcompose.domain.useCase.SelectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,7 +39,7 @@ class AddSelectionViewModel @Inject constructor(
     }
 
 
-    fun createSelection(selection: Selection) {
+    fun createSelection(selection: Selection,navController: NavController) {
         _loading.value = true
         viewModelScope.launch {
             runCatching {
@@ -49,7 +50,13 @@ class AddSelectionViewModel @Inject constructor(
                 Log.e(TAG, "Error creating new selection: $exception")
             }.also {
                 _loading.value=false
+
+                val previousEntry = navController.previousBackStackEntry
+                previousEntry?.savedStateHandle?.set("selectionCreated", true)
+                navController.popBackStack()
             }
         }
     }
+
+
 }

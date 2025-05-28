@@ -1,5 +1,6 @@
 package com.hse.courseworkcompose.presentation.ui.advertsiment
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,10 +37,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil3.EventListener
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.CachePolicy
+import coil3.request.ErrorResult
 import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import coil3.request.crossfade
 import com.hse.courseworkcompose.R
 import com.hse.courseworkcompose.domain.entity.AdvertisementShort
@@ -55,13 +60,29 @@ fun AdvertisementShortScreen(
 ) {
 
 
-    val painter = rememberAsyncImagePainter("http://10.0.2.2:8080/user/get/photo/polnaa-rastazka-zensiny-bol-sih-razmerov.jpg")
+
 
     val isFavoriteFlag = remember { mutableStateOf(advertisementShort.isFavorite) }
     val context = LocalContext.current
 
+    val imageLoader = ImageLoader.Builder(LocalContext.current)
+        .eventListener(object : EventListener() {
+            override fun onStart(request: ImageRequest) {
+                Log.d("ImageLoader", "Запрос начался: ${request.data}")
+            }
+
+            override fun onSuccess(request: ImageRequest, result: SuccessResult) {
+                Log.d("ImageLoader", "Успешно: ${request.data}")
+            }
+
+            override fun onError(request: ImageRequest, result: ErrorResult) {
+                Log.e("ImageLoader", "Ошибка: ${request.data} ${result.throwable}")
+            }
+        })
+        .build()
+
     LaunchedEffect(Unit) {
-        viewModel.loadData(context,advertisementShort.globalId)
+        viewModel.loadData(context, advertisementShort.globalId)
     }
 
     Column {
@@ -71,37 +92,21 @@ fun AdvertisementShortScreen(
                 .fillMaxSize()
 
         ) {
-//            AsyncImage(
-//                model = ImageRequest.Builder(LocalContext.current)
-//                    .data("https://plus.unsplash.com/premium_photo-1746201329166-64cc2408ef02?q=80&w=3687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
-//                    .crossfade(true)
-//                    .networkCachePolicy(CachePolicy.ENABLED)
-//                    .diskCachePolicy(CachePolicy.DISABLED)
-//                    .memoryCachePolicy(CachePolicy.ENABLED)
-//                    .build(),
-////                model = "https://img.freepik.com/free-photo/full-shot-plus-sized-woman-stretching_23-2150172315.jpg",
-//                alignment = Alignment.TopCenter,
-////                error = painterResource(R.drawable.placeholder),
-////                placeholder = painterResource(R.drawable.placeholder),
-//                contentDescription = "Фото товара",
-//                contentScale = ContentScale.FillBounds,
-//                modifier = Modifier
-//                    .height(275.dp)
-//                    .background(Color.Black)
-//                    .clickable(
-//                        enabled = true,
-//                        onClick = {
-//                            navController.navigate("advertisement/${advertisementShort.globalId}/${"56.327402"}/${"44.007066"}/") {
-//                                launchSingleTop = true
-//                            }
-//                        }
-//                    ),
-//            )
-
-            Image(
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(advertisementShort.url)
+                    .crossfade(true)
+                    .build(),
+//                model = "https://img.freepik.com/free-photo/full-shot-plus-sized-woman-stretching_23-2150172315.jpg",
+                alignment = Alignment.TopCenter,
+                imageLoader = imageLoader,
+//                error = painterResource(R.drawable.placeholder),
+//                placeholder = painterResource(R.drawable.placeholder),
+                        contentDescription = "Фото товара",
+                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .height(275.dp)
-                    .background(Color.White)
+                    .background(Color.Black)
                     .clickable(
                         enabled = true,
                         onClick = {
@@ -110,11 +115,23 @@ fun AdvertisementShortScreen(
                             }
                         }
                     ),
-                painter = painter,
-                contentDescription = "example using async image painter"
             )
 
-
+//            Image(
+//                modifier = Modifier
+//                    .height(275.dp)
+//                    .background(Color.White)
+//                    .clickable(
+//                        enabled = true,
+//                        onClick = {
+//                            navController.navigate("advertisement/${advertisementShort.globalId}") {
+//                                launchSingleTop = true
+//                            }
+//                        }
+//                    ),
+//                painter = painter,
+//                contentDescription = "example using async image painter"
+//            )
 
 
             if (advertisementShort.sellerDiscount != 0f) {
@@ -143,9 +160,9 @@ fun AdvertisementShortScreen(
                 checked = isFavoriteFlag.value,
                 onCheckedChange = {
                     isFavoriteFlag.value = !isFavoriteFlag.value
-                    if (isFavoriteFlag.value){
+                    if (isFavoriteFlag.value) {
                         viewModel.saveFavoriteAdvertisementShort(advertisementShort)
-                    }else{
+                    } else {
                         viewModel.deleteFavoriteAdvertisementShort(advertisementShort)
                     }
                 },

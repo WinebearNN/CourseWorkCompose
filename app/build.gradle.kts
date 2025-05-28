@@ -60,6 +60,9 @@ dependencies {
     //Coil image for compose
     implementation(libs.coil.compose)
 
+    // https://mvnrepository.com/artifact/io.coil-kt.coil3/coil-network-okhttp
+    runtimeOnly(libs.coil.network.okhttp)
+
     //lottie animation
     implementation (libs.lottie.compose)
 
@@ -97,7 +100,6 @@ dependencies {
 
 
 
-    implementation(libs.androidx.navigation.compose.v275)
 
     implementation(libs.androidx.navigation.runtime.android)
     // https://mvnrepository.com/artifact/androidx.navigation/navigation-fragment-ktx

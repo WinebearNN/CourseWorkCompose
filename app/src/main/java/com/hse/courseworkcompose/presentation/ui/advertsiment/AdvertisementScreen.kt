@@ -336,7 +336,7 @@ fun AdvertisementScreen(
                                 .weight(1f),
                             contentPadding = PaddingValues(0.dp),
                             onClick = {
-
+                                navController.popBackStack()
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent

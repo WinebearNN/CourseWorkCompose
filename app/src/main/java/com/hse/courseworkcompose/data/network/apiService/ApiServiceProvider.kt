@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiServiceProvider {
 
-    private const val BASE_URL = "http://10.0.2.2:8080"
+    private const val BASE_URL = "http://192.168.1.55:8080"
 
     private const val TOKEN="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQHhhbXBsZS5jb20iLCJpYXQiOjE3NDc5MTg1NjYsImV4cCI6OTAwMDAwMTc0NzkxODU2Nn0.KHw43W9ItjZMPk4YHZmqSg5dZQEU4F61oTmONWuM3SQ"
 

@@ -281,14 +281,14 @@ fun ProfileScreen(
 //                        text = "Способы оплаты",
 //                        icon = ImageVector.vectorResource(R.drawable.card)
 //                    ) {}
-                    Chapter(
-                        text = "Понравившееся",
-                        icon = ImageVector.vectorResource(R.drawable.like)
-                    ) {
-                        navController.navigate("favorite") {
-                            launchSingleTop = true
-                        }
-                    }
+//                    Chapter(
+//                        text = "Понравившееся",
+//                        icon = ImageVector.vectorResource(R.drawable.like)
+//                    ) {
+//                        navController.navigate("favorite") {
+//                            launchSingleTop = true
+//                        }
+//                    }
 
                     TextButton(
                         modifier = Modifier
