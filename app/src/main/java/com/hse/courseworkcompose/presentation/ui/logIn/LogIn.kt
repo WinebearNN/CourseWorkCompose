@@ -2,11 +2,9 @@ package com.hse.courseworkcompose.presentation.ui.logIn
 
 import android.util.Log
 import android.widget.Toast
-import com.hse.courseworkcompose.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,15 +34,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +53,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.hse.courseworkcompose.R
+import com.hse.courseworkcompose.presentation.ui.theme.Black
+import com.hse.courseworkcompose.presentation.ui.theme.DarkGray
+import com.hse.courseworkcompose.presentation.ui.theme.LightGray
+import com.hse.courseworkcompose.presentation.ui.theme.TextGray
+import com.hse.courseworkcompose.presentation.ui.theme.White
 import com.hse.courseworkcompose.presentation.viewmodel.logIn.LogInResult
 import com.hse.courseworkcompose.presentation.viewmodel.logIn.LoginViewModel
 import com.hse.courseworkcompose.util.ErrorCode
@@ -76,7 +83,7 @@ fun LogInScreen(
     var phoneError by remember { mutableStateOf<String?>(null) }
 
 
-    // 2. Обрабатываем результат
+
     LaunchedEffect(logInResult) {
         when (logInResult) {
 
@@ -88,11 +95,9 @@ fun LogInScreen(
             }
 
             LogInResult.Loading -> {
-                // Показываем загрузку (опционально)
             }
 
             is LogInResult.ValidationError -> {
-                // Показываем ошибки валидации (если используете login-форму)
                 val errors = (logInResult as LogInResult.ValidationError).errorCodes
                 errors.forEach { errorCode ->
                     when (errorCode.value) {
@@ -124,22 +129,19 @@ fun LogInScreen(
     }
 
 
-    // Получаем текущую цветовую схему
-    val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = isSystemInDarkTheme()
-
-
-    var isStudent by remember { mutableStateOf(true) }
+    var isLogin by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
+    var surname by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+    var dob by remember { mutableStateOf("") }
 
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.surface),
+            .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -147,16 +149,14 @@ fun LogInScreen(
                 .padding(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Логотип - можно добавить разные варианты для темной и светлой темы
             Image(
-                painter = painterResource(id = if (isDarkTheme) R.drawable.logo_light else R.drawable.logo_light),
-                contentDescription = "Логотип ВШЭ",
+                painter = painterResource(id = R.drawable.logo_light),
+                contentDescription = "Логотип",
                 modifier = Modifier.size(96.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Переключатель студент/гость
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,31 +165,28 @@ fun LogInScreen(
             ) {
                 TabButton(
                     text = "Войти",
-                    isSelected = isStudent,
+                    isSelected = isLogin,
                     onClick = {
-                        isStudent = true
+                        isLogin = true
                         emailError = null
                         passwordError = null
                         phoneError = null
                     },
-                    isDarkTheme = isDarkTheme
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 TabButton(
                     text = "Зарегистрироваться",
-                    isSelected = !isStudent,
+                    isSelected = !isLogin,
                     onClick = {
-                        isStudent = false
+                        isLogin = false
                         emailError = null
                         passwordError = null
                         phoneError = null
                     },
-                    isDarkTheme = isDarkTheme
                 )
             }
 
-            if (isStudent) {
-                // Форма для студентов
+            if (isLogin) {
                 OutlinedTextField(
                     value = email,
                     onValueChange = {
@@ -199,30 +196,31 @@ fun LogInScreen(
                     isError = emailError != null,
                     supportingText = {
                         if (emailError != null) {
-                            Text(text = emailError!!, color = colorScheme.error)
+                            Text(text = emailError!!, color = Color.Red)
                         }
                     },
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,imeAction = ImeAction.Done),
                     colors = OutlinedTextFieldDefaults.colors(
 
-                        focusedContainerColor = colorScheme.surface,
-                        unfocusedContainerColor = colorScheme.surface,
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
 
-                        focusedLabelColor = colorScheme.onPrimary,
-                        unfocusedLabelColor = colorScheme.tertiary,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
 
-                        focusedBorderColor = colorScheme.onPrimary,
-                        unfocusedBorderColor = colorScheme.onPrimary,
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
 
-                        cursorColor = colorScheme.onPrimary
+                        cursorColor = Black
                     ),
                     leadingIcon = {
                         Icon(
                             painter = rememberVectorPainter(image = Icons.Default.Email),
                             contentDescription = "Email icon",
-                            tint = colorScheme.onSurfaceVariant
+                            tint = Black
                         )
                     }
                 )
@@ -238,31 +236,35 @@ fun LogInScreen(
                     isError = passwordError != null,
                     supportingText = {
                         if (passwordError != null) {
-                            Text(text = passwordError!!, color = colorScheme.error)
+                            Text(text = passwordError!!, color = Color.Red)
                         }
                     },
+                    singleLine = true,
                     label = { Text("Пароль") },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
                     visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
 
-                        focusedContainerColor = colorScheme.surface,
-                        unfocusedContainerColor = colorScheme.surface,
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
 
-                        focusedLabelColor = colorScheme.onPrimary,
-                        unfocusedLabelColor = colorScheme.tertiary,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
 
-                        focusedBorderColor = colorScheme.onPrimary,
-                        unfocusedBorderColor = colorScheme.onPrimary,
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
 
-                        cursorColor = colorScheme.onPrimary
+                        cursorColor = Black
                     ),
                     leadingIcon = {
                         Icon(
                             painter = rememberVectorPainter(image = Icons.Default.Lock),
                             contentDescription = "Password icon",
-                            tint = colorScheme.onSurfaceVariant
+                            tint = Black
                         )
                     }
                 )
@@ -272,20 +274,19 @@ fun LogInScreen(
                 Button(
                     onClick = {
                         scope.launch {
-                            viewModel.logInUser(email, password)
+                            viewModel.logInUser(email = email, password = password)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorScheme.secondary,
-                        contentColor = colorScheme.onSecondary
+                        containerColor = Color(0xFF0F2954),
+                        contentColor = White
                     )
                 ) {
                     Text("Войти")
                 }
             } else {
-                // Форма для регистрации
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -294,22 +295,61 @@ fun LogInScreen(
                     colors = OutlinedTextFieldDefaults.colors(
 
 
-                        focusedContainerColor = colorScheme.surface,
-                        unfocusedContainerColor = colorScheme.surface,
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
 
-                        focusedLabelColor = colorScheme.onPrimary,
-                        unfocusedLabelColor = colorScheme.tertiary,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
 
-                        focusedBorderColor = colorScheme.onPrimary,
-                        unfocusedBorderColor = colorScheme.onPrimary,
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
 
-                        cursorColor = colorScheme.onPrimary
+                        cursorColor = Black
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
                     ),
                     leadingIcon = {
                         Icon(
                             painter = rememberVectorPainter(image = Icons.Default.Person),
                             contentDescription = "Person icon",
-                            tint = colorScheme.onSurfaceVariant
+                            tint = Black
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                OutlinedTextField(
+                    value = surname,
+                    onValueChange = { surname = it },
+                    label = { Text("Ваша фамилия") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+
+
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
+
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
+
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
+
+                        cursorColor = Black
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painter = rememberVectorPainter(image = Icons.Default.Person),
+                            contentDescription = "Person icon",
+                            tint = Black
                         )
                     }
                 )
@@ -325,30 +365,34 @@ fun LogInScreen(
                     isError = passwordError != null,
                     supportingText = {
                         if (passwordError != null) {
-                            Text(text = passwordError!!, color = colorScheme.error)
+                            Text(text = passwordError!!, color = Color.Red)
                         }
                     },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Password
+                    ),
                     label = { Text("Введите пароль") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
 
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
 
-                        focusedContainerColor = colorScheme.surface,
-                        unfocusedContainerColor = colorScheme.surface,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
 
-                        focusedLabelColor = colorScheme.onPrimary,
-                        unfocusedLabelColor = colorScheme.tertiary,
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
 
-                        focusedBorderColor = colorScheme.onPrimary,
-                        unfocusedBorderColor = colorScheme.onPrimary,
-
-                        cursorColor = colorScheme.onPrimary
+                        cursorColor = Black
                     ),
                     leadingIcon = {
                         Icon(
                             painter = rememberVectorPainter(image = Icons.Default.Lock),
                             contentDescription = "Password icon",
-                            tint = colorScheme.onSurfaceVariant
+                            tint = Black
                         )
                     }
                 )
@@ -364,31 +408,35 @@ fun LogInScreen(
                     isError = phoneError != null,
                     supportingText = {
                         if (phoneError != null) {
-                            Text(text = phoneError!!, color = colorScheme.error)
+                            Text(text = phoneError!!, color = Color.Red)
                         }
                     },
+                    singleLine = true,
                     label = { Text("Номер телефона") },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
 
 
-                        focusedContainerColor = colorScheme.surface,
-                        unfocusedContainerColor = colorScheme.surface,
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
 
-                        focusedLabelColor = colorScheme.onPrimary,
-                        unfocusedLabelColor = colorScheme.tertiary,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
 
-                        focusedBorderColor = colorScheme.onPrimary,
-                        unfocusedBorderColor = colorScheme.onPrimary,
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
 
-                        cursorColor = colorScheme.onPrimary
+                        cursorColor = Black
                     ),
                     leadingIcon = {
                         Icon(
                             painter = rememberVectorPainter(image = Icons.Default.Phone),
                             contentDescription = "Phone icon",
-                            tint = colorScheme.onSurfaceVariant
+                            tint = Black
                         )
                     }
                 )
@@ -404,34 +452,87 @@ fun LogInScreen(
                     isError = emailError != null,
                     supportingText = {
                         if (emailError != null) {
-                            Text(text = emailError!!, color = colorScheme.error)
+                            Text(text = emailError!!, color = Color.Red)
                         }
                     },
                     label = { Text("Email") },
+                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
 
-                        focusedContainerColor = colorScheme.surface,
-                        unfocusedContainerColor = colorScheme.surface,
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
 
-                        focusedLabelColor = colorScheme.onPrimary,
-                        unfocusedLabelColor = colorScheme.tertiary,
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
 
-                        focusedBorderColor = colorScheme.onPrimary,
-                        unfocusedBorderColor = colorScheme.onPrimary,
-
-                        cursorColor = colorScheme.onPrimary
+                        cursorColor = Black
                     ),
                     leadingIcon = {
                         Icon(
                             painter = rememberVectorPainter(image = Icons.Default.Email),
                             contentDescription = "Email icon",
-                            tint = colorScheme.onSurfaceVariant
+                            tint = Black
                         )
                     }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = dob,
+                    onValueChange = { newValue ->
+                        val filteredValue = newValue.filter { it.isDigit() || it == '.' }
+                        if (filteredValue.length <= 10) {
+                            dob = filteredValue
+                            val formattedText = formatDateInput(filteredValue)
+                            dob = formattedText
+
+                        }
+                    },
+                    isError = emailError != null,
+                    supportingText = {
+                        if (emailError != null) {
+                            Text(text = emailError!!, color = Color.Red)
+                        }
+                    },
+                    label = { Text("Дата рождения (дд.мм.гггг)") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
+
+                        focusedLabelColor = Black,
+                        unfocusedLabelColor = TextGray,
+
+                        focusedBorderColor = Black,
+                        unfocusedBorderColor = Black,
+
+                        cursorColor = Black
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painter = rememberVectorPainter(Icons.Default.Person),
+                            contentDescription = "Иконка даты рождения",
+                            tint = Color.Black
+                        )
+                    },
+                )
+
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -440,21 +541,24 @@ fun LogInScreen(
                         scope.launch {
                             viewModel.registerUser(
                                 email = email,
-                                password=password,
+                                password = password,
                                 phoneNumber = phone,
                                 name = name,
-                                )
+                                surname = surname,
+                                dob = dob
+                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorScheme.secondary,
-                        contentColor = colorScheme.onSecondary
+                        containerColor = Color(0xFF0F2954),
+                        contentColor = White
                     )
                 ) {
                     Text("Зарегистрироваться")
                 }
+
             }
         }
     }
@@ -465,12 +569,11 @@ private fun TabButton(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    isDarkTheme: Boolean
 ) {
     val backgroundColor = if (isSelected) {
-        if (isDarkTheme) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary
+        MaterialTheme.colorScheme.secondary
     } else {
-        if (isDarkTheme) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
+        MaterialTheme.colorScheme.primary
     }
 
     val contentColor = if (isSelected) {
@@ -508,5 +611,15 @@ private fun TabButton(
 @Composable
 fun PreviewLogInScreen() {
     LogInScreen(navController = rememberNavController())
+}
+
+private fun formatDateInput(input: String): String {
+    val digits = input.filter { it.isDigit() }
+    val builder = StringBuilder()
+    for (i in digits.indices) {
+        if (i == 2 || i == 4) builder.append('.')
+        if (i < 8) builder.append(digits[i])
+    }
+    return builder.toString()
 }
 

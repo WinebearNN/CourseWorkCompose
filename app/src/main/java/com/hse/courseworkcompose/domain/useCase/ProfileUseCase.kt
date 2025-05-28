@@ -25,11 +25,5 @@ class ProfileUseCase @Inject constructor(private val userRepository: UserReposit
         return userRepository.logout()
     }
 
-    suspend fun updateUserData(user: User): Result<Unit> {
-        return userRepository.updateUserData(user)
-    }
 
-    suspend fun uploadImageToServer(globalId:String,array: ByteArray): Result<Unit>{
-        return userRepository.uploadImageToServer(globalId,array)
-    }
 }

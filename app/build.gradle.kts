@@ -17,6 +17,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        android.buildFeatures.buildConfig =true
+        buildConfigField("String", "MAPKIT_API_KEY", "\"${rootProject.extra["mapkitApiKey"]}\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -68,6 +71,8 @@ dependencies {
 /////Hilt & viewModel compose
 
     implementation(libs.androidx.material) // или последняя версия
+
+    implementation (libs.maps.mobile)
 
 
 

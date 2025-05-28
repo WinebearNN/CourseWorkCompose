@@ -1,15 +1,16 @@
 package com.hse.courseworkcompose.data.network.response
 
 data class AdvertisementResponse (
-    var globalId:Long,
+    var id:Long,
     var price: Int,
     var isFavorite: Boolean,
     var sellerDiscount: Float,
-    var url: List<String>,
+    var url: MutableList<String>,
     var brand: String,
     var name: String,
     var description:String,
-    var rate:Float,
-    var quantityReviews:Int
+    var popularity:Float,
+    var quantityReviews:Int,
+    var category: String
 
 )

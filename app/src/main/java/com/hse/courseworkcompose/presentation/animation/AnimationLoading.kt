@@ -16,14 +16,13 @@ import com.hse.courseworkcompose.R
 
 @Composable
 fun LoadingAnimation(
-    isDarkTheme: Boolean
 ) {
-    val animation = if (isDarkTheme) LottieCompositionSpec.RawRes(R.raw.animation_loading_dark) else LottieCompositionSpec.RawRes(R.raw.animation_loading_light)
+    val animation = LottieCompositionSpec.RawRes(R.raw.animation_loading_light)
 
     val composition by rememberLottieComposition(animation)
     val progress by animateLottieCompositionAsState(
         composition,
-        iterations = LottieConstants.IterateForever // Бесконечная анимация
+        iterations = LottieConstants.IterateForever
     )
 
     LottieAnimation(

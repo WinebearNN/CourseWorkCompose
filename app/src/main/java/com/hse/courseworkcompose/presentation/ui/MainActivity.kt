@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.hse.courseworkcompose.presentation.navigation.MainNavScreen
 import dagger.hilt.android.AndroidEntryPoint
 import com.hse.courseworkcompose.presentation.ui.theme.HSEprojectTheme
+import com.yandex.mapkit.MapKitFactory
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -18,6 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            MapKitFactory.initialize(this)
             HSEprojectTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

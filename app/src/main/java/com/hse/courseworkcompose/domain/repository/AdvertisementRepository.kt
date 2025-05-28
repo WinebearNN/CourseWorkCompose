@@ -1,18 +1,22 @@
 package com.hse.courseworkcompose.domain.repository
 
+import com.hse.courseworkcompose.data.network.response.AdvertisementResponse
 import com.hse.courseworkcompose.domain.entity.Advertisement
 import com.hse.courseworkcompose.domain.entity.AdvertisementShort
-import com.hse.courseworkcompose.domain.entity.Filter
 
 interface AdvertisementRepository {
 
-    suspend fun getAdvertisement(advertisementGlobalId:Long): Result<Advertisement>
+    suspend fun getAdvertisementList(userId:String):Result<List<AdvertisementResponse>>
 
-    suspend fun getAdvertisementFavorites(): Result<List<AdvertisementShort>>
+    suspend fun getAdvertisement(advertisementGlobalId: Long,userId:String): Result<Advertisement>
 
-    suspend fun saveFavoriteAdvertisement(advertisementShort: AdvertisementShort)
+    suspend fun getAdvertisementFavorites(globalId:String): Result<List<AdvertisementShort>>
 
-    suspend fun getAdvertisementShortListByFilter(filter:Filter): Result<List<AdvertisementShort>>
+    suspend fun saveFavoriteAdvertisement(userGlobalId:String,advertisementShort: AdvertisementShort)
+    suspend fun deleteFavoriteAdvertisement(userGlobalId:String,advertisementShort: AdvertisementShort)
 
+
+
+    suspend fun getAdvertisementListBySelectionId(selectionId: String): Result<List<AdvertisementShort>>
 
 }

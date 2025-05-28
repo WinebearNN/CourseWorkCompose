@@ -2,10 +2,9 @@ package com.hse.courseworkcompose.presentation.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,10 +18,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         NavigationScreen.Home,
+        NavigationScreen.Selection,
         NavigationScreen.Favourite,
-        NavigationScreen.Profile
+        NavigationScreen.Profile,
     )
-//    val colorScheme = MaterialTheme.colorScheme
 
     NavigationBar(
         modifier = Modifier
@@ -62,13 +61,7 @@ fun BottomNavigationBar(navController: NavController) {
                         restoreState = true
                     }
                 },
-//                colors = NavigationBarItemDefaults.colors(
-//                    indicatorColor = Color.Transparent,
-//                    selectedIconColor = colorScheme.primary,
-//                    unselectedIconColor = colorScheme.onPrimary,
-//                    selectedTextColor = colorScheme.primary,
-//                    unselectedTextColor = colorScheme.onPrimary,
-//                )
+
             )
         }
     }

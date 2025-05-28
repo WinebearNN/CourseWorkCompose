@@ -12,7 +12,14 @@ class RegistrationUseCase @Inject constructor(private val userRepository: UserRe
         private const val TAG = "RegisterUserUseCase"
     }
 
-    suspend fun execute(email: String,password: String,name:String,phoneNumber:String): Result<Unit> {
+    suspend fun execute(
+        email: String,
+        password: String,
+        name:String,
+        surname:String,
+        phoneNumber:String,
+        dob:Long
+    ): Result<Unit> {
         val globalErrors = mutableListOf<ErrorCode>()
 
         validateUser(email=email,password=password, phoneNumber = phoneNumber,globalErrors)
@@ -22,10 +29,12 @@ class RegistrationUseCase @Inject constructor(private val userRepository: UserRe
         }
 
         return userRepository.register(
-            email=email,
-            password=password,
+            email = email,
+            password = password,
             name=name,
-            phoneNumber=phoneNumber
+            surname=surname,
+            phoneNumber=phoneNumber,
+            dob=dob,
         )
     }
 
@@ -34,7 +43,6 @@ class RegistrationUseCase @Inject constructor(private val userRepository: UserRe
             globalErrors.add(ErrorCode.ERROR_101)
         }
 
-        // Валидация пароля
         if (!CheckValidation.Companion.isValidPassword(password)) {
             globalErrors.add(ErrorCode.ERROR_102)
         }

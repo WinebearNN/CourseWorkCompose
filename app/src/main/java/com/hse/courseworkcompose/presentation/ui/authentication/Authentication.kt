@@ -31,6 +31,8 @@ fun AuthenticationScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
 
+
+
     val authResult by viewModel.authResult.collectAsState()
     var showLoading by remember { mutableStateOf(true) }
     var loadingStartTime by remember { mutableLongStateOf(0L) }
@@ -68,7 +70,7 @@ fun AuthenticationScreen(
                     delay(remaining)
                 }
 
-                navController.navigate("profile") {
+                navController.navigate("login") {
                     popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                 }
@@ -76,7 +78,6 @@ fun AuthenticationScreen(
             }
 
             AuthResult.Loading -> {
-                // Продолжаем показывать загрузку
             }
         }
     }
@@ -88,8 +89,7 @@ fun AuthenticationScreen(
         contentAlignment = Alignment.Center
     ) {
         if (showLoading) {
-            // Ваша анимация загрузки (пример с Lottie)
-            LoadingAnimation(isDarkTheme)
+            LoadingAnimation()
         }
     }
 }

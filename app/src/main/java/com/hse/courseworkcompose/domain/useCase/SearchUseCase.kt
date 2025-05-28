@@ -1,21 +1,26 @@
 package com.hse.courseworkcompose.domain.useCase
 
-import com.hse.courseworkcompose.domain.entity.User
-import com.hse.courseworkcompose.domain.repository.UserRepository
+import com.hse.courseworkcompose.domain.entity.AdvertisementShort
+import com.hse.courseworkcompose.domain.repository.AdvertisementRepository
 import javax.inject.Inject
 
-class SearchUseCase @Inject constructor(private val userRepository: UserRepository) {
+class SearchUseCase @Inject constructor(
+    private val advertisementRepository: AdvertisementRepository,
+) {
 
     companion object {
         private const val TAG = "SearchUseCase"
     }
 
-    suspend fun getUsersByName(name: String): Result<List<User>> {
-        return userRepository.getUsers(name)
+
+    suspend fun getAdvertisementListBySelectionId(selectionId: String): Result<List<AdvertisementShort>>{
+        return advertisementRepository.getAdvertisementListBySelectionId(selectionId)
     }
 
-//    suspend fun getUserByEmail(email:String):Result<User> {
-//        return userRepository.getUserByEmail(email)
-//    }
+
+
+
+
+
 
 }

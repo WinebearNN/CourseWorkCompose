@@ -1,5 +1,6 @@
 package com.hse.courseworkcompose.presentation.ui.advertsiment
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +25,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,363 +46,361 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.hse.courseworkcompose.R
-import com.hse.courseworkcompose.domain.entity.Advertisement
 import com.hse.courseworkcompose.presentation.ui.utill.RatingStar
-import com.hse.courseworkcompose.presentation.ui.utill.TypedBar
+import com.hse.courseworkcompose.presentation.viewmodel.advertisement.AdvertisementViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
 
-
-
-
-private val arrayTypes = Array<String>(5) { "Красный" }
-
-private val advertisement = Advertisement(
-    globalId = 0L,
-    price = 10000,
-    isFavorite = true,
-    sellerDiscount = 0.1f,
-    url = listOf(""),
-    brand = "Adidas",
-    name = "Yezzy boost 350v2",
-    description = "Сумка выполнена из полиэстера с металлическим декором по всей поверхности. Особенности: 1 отделение, магнитная застежка, внутри текстильная подкладка без дополнительных карманов, ручка-цепочка.",
-    rate = 3.2f,
-    quantityReviews = 3500
-)
+//private val advertisement = Advertisement(
+//    globalId = 0L,
+//    price = 10000,
+//    isFavorite = true,
+//    sellerDiscount = 0.1f,
+//    url = "",
+//    brand = "Adidas",
+//    name = "Yezzy boost 350v2",
+//    description = "Сумка выполнена из полиэстера с металлическим декором по всей поверхности. Особенности: 1 отделение, магнитная застежка, внутри текстильная подкладка без дополнительных карманов, ручка-цепочка.",
+//    rate = 3.2f,
+//    quantityReviews = 3500
+//)
 
 @Composable
 fun AdvertisementScreen(
-    advertisement: Advertisement
+    navController: NavController,
+    globalId: String,
+    viewModel: AdvertisementViewModel = hiltViewModel()
 ) {
 
-    var isFavoriteFlag by remember { mutableStateOf<Boolean?>(advertisement.isFavorite) }
-    val pagerState = rememberPagerState(pageCount = {
-        10
-    })
+    val context=LocalContext.current
+    val loading = viewModel.loading.collectAsState()
+    val advertisement = viewModel.advertisement.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-    ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadData(context,globalId.toLong())
+    }
 
-        item {
+    if (loading.value == false) {
 
-            Box(modifier = Modifier.fillMaxSize()) {
+        var isFavoriteFlag by remember { mutableStateOf<Boolean?>(advertisement.value!!.isFavorite) }
+        val pagerState = rememberPagerState(pageCount = {
+            10
+        })
 
 
-                Column {
-                    Box(
-                        modifier = Modifier.wrapContentSize()
-                    ) {
 
-                        HorizontalPager(
-//                modifier = Modifier
-//                    .background(Color.Black),
-                            state = pagerState,
-                            pageSpacing = 0.dp,
-                            pageSize = PageSize.Fixed(300.dp),
-                            contentPadding = PaddingValues(horizontal = 0.dp) // Убираем внутренние отступы
-                        ) { page ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
 
-                            Box(
-                                modifier = Modifier
-                                    .width(300.dp)
-                                    .height(400.dp)
-                                    .padding(0.dp) // Полное отсутствие отступов
-//                        .clip(RoundedCornerShape(12.dp))
-//                        .graphicsLayer {
-//                            // Параллакс-эффект (опционально)
-//                            val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-//                            alpha = lerp(0.5f, 1f, 1 - pageOffset.absoluteValue)
-//                        }
-                            ) {
+            item {
 
-                                AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
-                                        .data(advertisement.url)
-                                        .crossfade(true)
-                                        .build(),
-                                    alignment = Alignment.TopCenter,
-                                    error = painterResource(R.drawable.placeholder_2),
-                                    placeholder = painterResource(R.drawable.placeholder),
-                                    contentDescription = "Фото товара",
-                                    contentScale = ContentScale.FillBounds,
+                Box(modifier = Modifier.fillMaxSize()) {
+
+
+                    Column {
+                        Box(
+                            modifier = Modifier.wrapContentSize()
+                        ) {
+
+                            HorizontalPager(
+                                state = pagerState,
+                                pageSpacing = 0.dp,
+                                pageSize = PageSize.Fixed(300.dp),
+                                contentPadding = PaddingValues(horizontal = 0.dp)
+                            ) { page ->
+
+                                Box(
                                     modifier = Modifier
-                                        .height(400.dp)
                                         .width(300.dp)
-                                        .background(Color.White),
+                                        .height(400.dp)
+                                        .padding(0.dp)
+
+                                ) {
+
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(LocalContext.current)
+                                            .data(advertisement.value!!.url)
+                                            .crossfade(true)
+                                            .build(),
+                                        alignment = Alignment.TopCenter,
+                                        error = painterResource(R.drawable.placeholder_2),
+                                        placeholder = painterResource(R.drawable.placeholder),
+                                        contentDescription = "Фото товара",
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier
+                                            .height(400.dp)
+                                            .width(300.dp)
+                                            .background(Color.White),
+                                    )
+                                }
+
+                            }
+                            if (advertisement.value!!.sellerDiscount != 0f) {
+                                Text(
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color(0xFFEB3131),
+                                            shape = RectangleShape
+                                        )
+                                        .align(Alignment.BottomStart)
+                                        .padding(4.dp),
+                                    fontSize = 14.sp,
+                                    text = "-${(advertisement.value!!.sellerDiscount * 100).toInt()}%",
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
                                 )
                             }
-
                         }
-                        if (advertisement.sellerDiscount != 0f) {
-                            Text(
+                        Spacer(
+                            modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(Color(0xFFD9D9D9))
+                        )
+
+
+
+                        Row(
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Column {
+
+                                Text(
+                                    modifier = Modifier
+                                        .padding(top = 20.dp, start = 20.dp),
+                                    text = advertisement.value!!.brand,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 19.sp,
+                                    letterSpacing = 1.sp
+                                )
+
+
+
+                                Text(
+                                    modifier = Modifier
+                                        .padding(top = 5.dp, start = 20.dp),
+                                    text = advertisement.value!!.name,
+                                    fontSize = 16.sp,
+                                    letterSpacing = 0.5.sp
+                                )
+
+                                Row(
+                                    modifier = Modifier
+                                        .padding(start = 20.dp, top = 20.dp),
+                                    horizontalArrangement = Arrangement.Start
+                                ) {
+
+                                    if (advertisement.value!!.sellerDiscount == 0f) {
+                                        Text(
+                                            text = NumberFormat.getNumberInstance(Locale.getDefault())
+                                                .format(advertisement.value!!.price) + " ₽",
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.Medium,
+                                        )
+                                    } else {
+                                        Text(
+                                            text = NumberFormat.getNumberInstance(Locale.getDefault())
+                                                .format(advertisement.value!!.price),
+                                            textDecoration = TextDecoration.LineThrough,
+                                            fontSize = 17.sp,
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .padding(start = 10.dp),
+                                            text = NumberFormat.getNumberInstance(Locale.getDefault())
+                                                .format((advertisement.value!!.price * (1 - advertisement.value!!.sellerDiscount)).toInt()) + " ₽",
+                                            color = Color(0xFFEB3131),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 17.sp,
+                                        )
+                                    }
+                                }
+                            }
+                            Column(
                                 modifier = Modifier
-//                            .padding(bottom = 1.dp)
-                                    .background(
-                                        color = Color(0xFFEB3131),
-                                        shape = RectangleShape
-                                    )
-                                    .align(Alignment.BottomStart)
-                                    .padding(4.dp),
-                                fontSize = 14.sp,
-                                text = "-${(advertisement.sellerDiscount * 100).toInt()}%",
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .fillMaxWidth()
-                            .background(Color(0xFFD9D9D9))
-                    )
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.Center
 
-
-
-                    Row(
-//                verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Column {
-
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 20.dp, start = 20.dp),
-                                text = advertisement.brand,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 19.sp,
-                                letterSpacing = 1.sp
-                            )
-
-
-
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 5.dp, start = 20.dp),
-                                text = advertisement.name,
-                                fontSize = 16.sp,
-                                letterSpacing = 0.5.sp
-                            )
-
-                            Row(
-                                modifier = Modifier
-                                    .padding(start = 20.dp, top = 20.dp),
-                                horizontalArrangement = Arrangement.Start
                             ) {
+                                Column(
+                                    modifier = Modifier.padding(top = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
 
-                                if (advertisement.sellerDiscount == 0f) {
-                                    Text(
-                                        text = NumberFormat.getNumberInstance(Locale.getDefault())
-                                            .format(advertisement.price) + " ₽",
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.Medium,
-                                    )
-                                } else {
-                                    Text(
-                                        text = NumberFormat.getNumberInstance(Locale.getDefault())
-                                            .format(advertisement.price),
-                                        textDecoration = TextDecoration.LineThrough,
-                                        fontSize = 17.sp,
-                                    )
-                                    Text(
+
+                                    RatingStar(
                                         modifier = Modifier
-                                            .padding(start = 10.dp),
-                                        text = NumberFormat.getNumberInstance(Locale.getDefault())
-                                            .format((advertisement.price * (1 - advertisement.sellerDiscount)).toInt()) + " ₽",
-                                        color = Color(0xFFEB3131),
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 17.sp,
+                                            .padding(top = 5.dp, start = 20.dp),
+                                        value = 3.5f,
+                                        starSize = 16.dp,
+                                        fontSize = 14.sp,
+                                        paddingStarValue = 5.dp,
+                                        reviewQuantity = advertisement.value!!.quantityReviews
                                     )
                                 }
                             }
                         }
-                        Column(
-                            modifier = Modifier
-                                .weight(1f),
-//                        .padding(end = 20.dp),
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.Center
-//                    contentAlignment = Alignment.BottomEnd
-
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(top = 20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
 
 
-//                        AsyncImage(
-//                            modifier = Modifier
-////                            .padding(end=20.dp)
-//                                .height(48.dp)
-//                                .width(48.dp)
-////                                .align(Alignment.Center)
-//                                .background(Color.White, shape = CircleShape)
-//                                .border(1.dp, Color(0xFFD9D9D9), shape = CircleShape)
-//                                .padding(10.dp),
-//                            model = ImageRequest.Builder(LocalContext.current)
-//                                .data(url)
-//                                .crossfade(true)
-//                                .build(),
-//                            alignment = Alignment.Center,
-//                            error = painterResource(R.drawable.placeholder_3),
-//                            placeholder = painterResource(R.drawable.placeholder_3),
-//                            contentDescription = "лого бренда",
-//                            contentScale = ContentScale.FillBounds,
-//                        )
-
-
-                                RatingStar(
-                                    modifier = Modifier
-                                        .padding(top = 5.dp, start = 20.dp),
-                                    value = 3.5f,
-                                    starSize = 16.dp,
-                                    fontSize = 14.sp,
-                                    paddingStarValue = 5.dp,
-                                    reviewQuantity = advertisement.quantityReviews
+                        Button(
+                            onClick = {
+                                val address = "г.Нижний Новгород пл. Минина"
+                                val latitude = 56.327402
+                                val longitude = 44.007066
+                                Log.d(
+                                    "AdvertisementScreen",
+                                    "id of advertisement is: ${advertisement.value!!.globalId}"
                                 )
-                            }
-                        }
-                    }
+                                navController.navigate("placingOrder/${advertisement.value!!.globalId}") {
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(
+                                    top = 20.dp,
+                                    bottom = 40.dp,
+                                    end = 10.dp,
+                                    start = 10.dp
+                                )
+                                .fillMaxWidth()
+                                .height(50.dp),
 
-                    TypedBar(arrayTypes)
+                            colors = ButtonColors(
 
-                    Button(
-                        onClick = {},
-                        modifier = Modifier
-                            .padding(
-                                top = 20.dp,
-                                bottom = 40.dp,
-                                end = 10.dp,
-                                start = 10.dp
+                                containerColor = Color.Black,
+                                disabledContentColor = Color.Black,
+
+                                contentColor = Color.White,
+                                disabledContainerColor = Color.White
+
+                            ),
+                            shape = RoundedCornerShape(5.dp)
+                        ) {
+                            Text(
+                                text = "Заказать"
                             )
-                            .fillMaxWidth()
-                            .height(50.dp),
+                        }
 
-                        colors = ButtonColors(
 
-                            containerColor = Color.Black,
-                            disabledContentColor = Color.Black,
+                        Spacer(
+                            modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(Color(0xFFD9D9D9))
+                        )
 
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.White
-
-                        ),
-                        shape = RoundedCornerShape(5.dp)
-                    ) {
                         Text(
-                            text = "Добавить в корзину"
-                        )
-                    }
-
-
-                    Spacer(
-                        modifier = Modifier
-//                    .padding(top = 30.dp)
-                            .height(1.dp)
-                            .fillMaxWidth()
-                            .background(Color(0xFFD9D9D9))
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                top = 30.dp,
-                                start = 20.dp
-                            ),
-                        text = "О товаре",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 22.sp
-
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                vertical = 15.dp,
-                                horizontal = 20.dp
-                            ),
-                        text = advertisement.description,
-                    )
-                }
-
-
-                Row {
-
-                    Button(
-                        modifier = Modifier
-                            .padding(top = 5.dp, start = 15.dp)
-                            .weight(1f),
-                        contentPadding = PaddingValues(0.dp),
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent
-                        )
-                    ) {
-
-                        Image(
-                            imageVector = ImageVector.vectorResource(R.drawable.arrow_back),
-                            contentDescription = "Favourite",
-                            alignment = Alignment.CenterStart,
                             modifier = Modifier
-//                                .padding(top = 10.dp, start = 10.dp)
-                                .weight(1f)
-                                .size(36.dp)
+                                .padding(
+                                    top = 30.dp,
+                                    start = 20.dp
+                                ),
+                            text = "О товаре",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 22.sp
 
                         )
-                    }
 
-                    Button(
-                        modifier = Modifier
-                            .padding(top = 5.dp, end = 15.dp)
-                            .weight(1f),
-                        contentPadding = PaddingValues(0.dp),
-                        onClick = { isFavoriteFlag = !isFavoriteFlag!! },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent
-                        )
-                    ) {
-
-
-                        Image(
-                            imageVector = if (isFavoriteFlag == true) ImageVector.vectorResource(R.drawable.like_filled) else ImageVector.vectorResource(
-                                R.drawable.like
-                            ),
-                            contentDescription = "Favourite",
-                            alignment = Alignment.CenterEnd,
+                        Text(
                             modifier = Modifier
-                                .size(36.dp)
-                                .weight(1f)
+                                .padding(
+                                    vertical = 15.dp,
+                                    horizontal = 20.dp
+                                ),
+                            text = advertisement.value!!.description,
                         )
                     }
 
+
+                    Row {
+
+                        Button(
+                            modifier = Modifier
+                                .padding(top = 5.dp, start = 15.dp)
+                                .weight(1f),
+                            contentPadding = PaddingValues(0.dp),
+                            onClick = {
+
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+
+                            Image(
+                                imageVector = ImageVector.vectorResource(R.drawable.arrow_back),
+                                contentDescription = "Favourite",
+                                alignment = Alignment.CenterStart,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .size(36.dp)
+
+                            )
+                        }
+
+                        Button(
+                            modifier = Modifier
+                                .padding(top = 5.dp, end = 15.dp)
+                                .weight(1f),
+                            contentPadding = PaddingValues(0.dp),
+                            onClick = {
+                                isFavoriteFlag = !isFavoriteFlag!!
+                                viewModel.saveFavoriteAdvertisement()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+
+
+                            Image(
+                                imageVector = if (isFavoriteFlag == true) ImageVector.vectorResource(
+                                    R.drawable.like_filled
+                                ) else ImageVector.vectorResource(
+                                    R.drawable.like
+                                ),
+                                contentDescription = "Favourite",
+                                alignment = Alignment.CenterEnd,
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .weight(1f)
+                            )
+                        }
+
+                    }
                 }
             }
+        }
+
+
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = Color.Blue
+            )
         }
     }
 
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewAdvertisement() {
-    AdvertisementScreen(
-        advertisement = advertisement
-    )
-}

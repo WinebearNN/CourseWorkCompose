@@ -1,9 +1,7 @@
 package com.hse.courseworkcompose.domain.entity
 
-import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
-import io.objectbox.converter.PropertyConverter
 
 @Entity
 data class User(
@@ -14,19 +12,7 @@ data class User(
     var name: String = "",
     var surname:String = "",
     var phoneNumber:String ="",
-    var dateOfBirth: Long = 0,
-    @Convert(converter = CountryConverter::class, dbType = String::class)
-    var country: Country = Country.Russia
+    var dateOfBirth: Long = 0
 )
 
-class CountryConverter : PropertyConverter<Country, String> {
-    override fun convertToEntityProperty(databaseValue: String?): Country {
-        return if (databaseValue == null) Country.Russia
-        else Country.valueOf(databaseValue)
-    }
-
-    override fun convertToDatabaseValue(entityProperty: Country?): String {
-        return entityProperty?.name ?: Country.Russia.name
-    }
-}
 

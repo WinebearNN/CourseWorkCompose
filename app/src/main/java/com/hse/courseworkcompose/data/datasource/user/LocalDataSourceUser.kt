@@ -28,7 +28,7 @@ class LocalDataSourceUser @Inject constructor(
     }
 
     suspend fun getAllUsers(): MutableList<User>? = withContext(Dispatchers.IO) {
-        Log.i(TAG, "All users: ${userBox.all}");
+        Log.i(TAG, "All users: ${userBox.all}")
         userBox.all
     }
 
@@ -37,10 +37,10 @@ class LocalDataSourceUser @Inject constructor(
         Log.i(TAG, "User was saved: $user")
     }
 
-    suspend fun removeUser(user: User) = withContext(Dispatchers.IO) {
-        Log.i(TAG, "User was removed: $user")
-        userBox.remove(user)
-    }
+//    suspend fun removeUser() = withContext(Dispatchers.IO) {
+//        Log.i(TAG, "Users were removed")
+//        userBox.removeAll()
+//    }
 
     suspend fun getUser(id: Long): User? = withContext(Dispatchers.IO) {
         Log.i(TAG, "User was taken: ${userBox.get(id)}")

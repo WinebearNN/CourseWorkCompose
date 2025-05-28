@@ -50,9 +50,10 @@ fun rememberNavRoute(navController: NavController): String? {
 
 private fun shouldShowBottomBar(route: String?): Boolean {
     val excludedRoutes = setOf(
-        "authentication",
-        "logIn",
-        "registration"
+        "profile",
+        "home",
+        "favorite",
+        "selection",
         )
-    return !excludedRoutes.contains(route)
+    return excludedRoutes.contains(route)
 }

@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.hse.courseworkcompose.util.Error
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,12 +27,14 @@ class LoginViewModel @Inject constructor(
     private val _logInResult = MutableStateFlow<LogInResult>(LogInResult.Loading)
     val logInResult: StateFlow<LogInResult> = _logInResult.asStateFlow()
 
-//    private val _registrationResult = MutableStateFlow<LogInResult>(LogInResult.Loading)
-//    val registrationResult: StateFlow<LogInResult> = _registrationResult.asStateFlow()
-
-
-
-    fun registerUser(email: String, password: String, name: String,phoneNumber:String) {
+    fun registerUser(
+        email: String,
+        password: String,
+        name: String,
+        surname:String,
+        phoneNumber:String,
+        dob:String,
+    ) {
 
         viewModelScope.launch {
             _logInResult.value = LogInResult.Loading
@@ -38,7 +42,10 @@ class LoginViewModel @Inject constructor(
                 email = email,
                 password = password,
                 name=name,
-                phoneNumber=phoneNumber)
+                surname=surname,
+                phoneNumber=phoneNumber,
+                dob=parseDateToMillis(dob),
+            )
                 .fold(
                     onSuccess = {
                         LogInResult.UserSuccess(true)
@@ -69,6 +76,20 @@ class LoginViewModel @Inject constructor(
                         }
                     }
                 )
+        }
+    }
+
+
+    private fun parseDateToMillis(date: String): Long {
+        return try {
+            if (date.matches(Regex("\\d{2}\\.\\d{2}\\.\\d{4}"))) {
+                val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                formatter.parse(date)?.time ?: 0L
+            } else {
+                0L
+            }
+        } catch (e: Exception) {
+            0L
         }
     }
 

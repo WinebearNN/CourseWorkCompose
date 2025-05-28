@@ -1,12 +1,12 @@
 package com.hse.courseworkcompose.data.datasource.advertisement
 
-import com.hse.courseworkcompose.domain.entity.Advertisement
+import android.util.Log
 import com.hse.courseworkcompose.domain.entity.AdvertisementShort
-import io.objectbox.BoxStore
-import javax.inject.Inject
 import io.objectbox.Box
+import io.objectbox.BoxStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
 class LocalDataSourceAdvertisement @Inject constructor(
@@ -24,12 +24,24 @@ class LocalDataSourceAdvertisement @Inject constructor(
     suspend fun saveFavoriteAdvertisement(advertisementShort: AdvertisementShort) = withContext(
         Dispatchers.IO
     ) {
+        Log.d(TAG, "Try to put fav adv")
         advertisementBox.put(advertisementShort)
+    }
+
+    suspend fun deleteFavoriteAdvertisement(advertisementShort: AdvertisementShort) = withContext(
+        Dispatchers.IO
+    ) {
+        advertisementBox.remove(advertisementShort)
     }
 
     suspend fun getAllFavorites(): List<AdvertisementShort> = withContext(
         Dispatchers.IO
     ) {
         advertisementBox.all
+    }
+
+    suspend fun checkFavoriteList(list: List<AdvertisementShort>) = withContext(Dispatchers.IO) {
+        advertisementBox.removeAll()
+        advertisementBox.put(list)
     }
 }

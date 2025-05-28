@@ -8,7 +8,6 @@ import com.hse.courseworkcompose.data.network.response.UserResponse
 import com.hse.courseworkcompose.domain.entity.LoyaltyCard
 import com.hse.courseworkcompose.domain.entity.User
 import com.hse.courseworkcompose.domain.repository.UserRepository
-
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,25 +28,25 @@ class UserRepositoryImpl @Inject constructor(
         return Result.failure(Exception("User not found"))
     }
 
-    override suspend fun updateUserData(user: User): Result<Unit> {
-        val result = remoteDataSourceUser.updateUserData(user)
-        if (result.isSuccess) localDataSourceUser.updateUserData(user)
-        return result
-    }
 
-    override suspend fun uploadImageToServer(globalId: String, array: ByteArray): Result<Unit> {
-        return remoteDataSourceUser.uploadImageToServer(globalId, array)
-    }
+
+
 
     override suspend fun refreshUserData(): Result<User> {
         val user = localDataSourceUser.getAllUsers()!!.last()
+        Log.d(TAG,"Trying to get user from server by globalId ${user.globalId}")
         val result = remoteDataSourceUser.getUserById(user.globalId.toString())
+        Log.d(TAG,result.toString())
         if (result.isSuccess) {
-            localDataSourceUser.updateUserData(result.getOrThrow())
-            return result
+            if (result.getOrNull()!=null) {
+                localDataSourceUser.updateUserData(result.getOrThrow())
+                return Result.success(result.getOrThrow())
+            }else{
+                return Result.success(user)
+            }
         }
         else {
-            return Result.success(user)
+            return result
         }
     }
 
@@ -55,9 +54,7 @@ class UserRepositoryImpl @Inject constructor(
         localDataSourceUser.removeAll()
     }
 
-    override suspend fun getUsers(name: String): Result<List<User>> {
-        return remoteDataSourceUser.getUsersByName(name)
-    }
+
 
     override suspend fun getLoyaltyCard(userGlobalId: Long): Result<LoyaltyCard> {
         return remoteDataSourceUser.getLoyaltyLevel(userGlobalId)
@@ -67,15 +64,19 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun register(
         email: String,
         password: String,
-        name: String,
-        phoneNumber: String
+        name:String,
+        surname:String,
+        phoneNumber:String,
+        dob:Long
     ): Result<Unit> {
 
         val result = remoteDataSourceUser.registerUser(
-            name = name,
             email = email,
             password = password,
-            phoneNumber = phoneNumber
+            name=name,
+            surname=surname,
+            phoneNumber=phoneNumber,
+            dob=dob,
         )
 
         val userResponse = Gson().fromJson<UserResponse>(
@@ -89,7 +90,6 @@ class UserRepositoryImpl @Inject constructor(
             surname = userResponse.surname,
             name = userResponse.name,
             dateOfBirth = userResponse.dob,
-            country = userResponse.country,
             phoneNumber = userResponse.phoneNumber
         )
 
@@ -102,7 +102,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun login(password: String, email: String): Result<Unit> {
-        val result = remoteDataSourceUser.login(email, password)
+        val result = remoteDataSourceUser.login(email = email, password = password)
         if (result.isSuccess) {
             val userResponse = Gson().fromJson<UserResponse>(
                 result.getOrNull(),
@@ -115,7 +115,6 @@ class UserRepositoryImpl @Inject constructor(
                 surname = userResponse.surname,
                 name = userResponse.name,
                 dateOfBirth = userResponse.dob,
-                country = userResponse.country,
                 phoneNumber = userResponse.phoneNumber
             )
 

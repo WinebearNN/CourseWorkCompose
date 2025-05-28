@@ -1,164 +1,183 @@
 package com.hse.courseworkcompose.presentation.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.hse.courseworkcompose.domain.entity.AdvertisementShort
 import com.hse.courseworkcompose.presentation.ui.advertsiment.AdvertisementShortScreen
+import com.hse.courseworkcompose.presentation.viewmodel.home.HomeViewModel
 
 private const val URL_EXAMPLE: String = "https://example.com/image.jpg"
 
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-    var searchQuery by remember { mutableStateOf("") } // Переименовал для ясности
+    var list = viewModel.list.collectAsState()
+    var loading = viewModel.loading.collectAsState()
+
+    val context= LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.getAdvertisementShortList(context)
+    }
 
 
 
-    Column {
+    if (loading.value == false) {
+        Column {
 
-        Box{
-
-            Row(
-                modifier = Modifier
-                    .align (Alignment.TopStart)
-            ){
-
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                        .padding(0.dp)
-                        .align(Alignment.CenterVertically)
-                        .shadow( // Добавим тень для глубины
-                            elevation = 4.dp,
-                            shape = RoundedCornerShape(25.dp),
-                            clip = true
-                        ),
-                    value = searchQuery,
-                    onValueChange = { newText -> searchQuery = newText },
-                    placeholder = {
-                        Text(
-                            "Поиск товара",
-                            modifier = Modifier.padding(bottom = 4.dp),  // Уменьшаем отступ снизу
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(25.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        autoCorrect = true,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Search // Изменяем действие клавиатуры на "Поиск"
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            // Действие при нажатии на поиск (например, фильтрация списка)
-//                            viewModel.searchItems(searchQuery)
-                        }
-                    ),
-                    leadingIcon = { // Добавим иконку слева для баланса
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "Поиск",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(
-                                onClick = { searchQuery = "" } // Очистка поля
-                            ) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Очистить",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                )
-
-//                Image(
+//        Box{
+//
+//            Row(
+//                modifier = Modifier
+//                    .align (Alignment.TopStart)
+//            ){
+//
+//                TextField(
 //                    modifier = Modifier
-//                        .size(36.dp),
-//                    imageVector = ImageVector.vectorResource(R.drawable.magnifier),
-//                    contentDescription = "Поиск"
+//                        .fillMaxWidth()
+//                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+//                        .padding(0.dp)
+//                        .align(Alignment.CenterVertically)
+//                        .shadow(
+//                            elevation = 4.dp,
+//                            shape = RoundedCornerShape(25.dp),
+//                            clip = true
+//                        ),
+//                    value = searchQuery,
+//                    onValueChange = { newText -> searchQuery = newText },
+//                    placeholder = {
+//                        Text(
+//                            "Поиск товара",
+//                            modifier = Modifier.padding(bottom = 4.dp),
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
+//                    },
+//                    singleLine = true,
+//                    shape = RoundedCornerShape(25.dp),
+//                    colors = TextFieldDefaults.colors(
+//                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+//                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+//                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+//                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+//                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+//                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+//                        focusedIndicatorColor = Color.Transparent,
+//                        unfocusedIndicatorColor = Color.Transparent,
+//                        cursorColor = MaterialTheme.colorScheme.primary
+//                    ),
+//                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences,
+//                        autoCorrectEnabled = true,
+//                        keyboardType = KeyboardType.Text,
+//                        imeAction = ImeAction.Search,
+//                    ),
+//                    keyboardActions = KeyboardActions(
+//                        onSearch = {
+//                            // Действие при нажатии на поиск (например, фильтрация списка)
+////                            viewModel.searchItems(searchQuery)
+//                        }
+//                    ),
+//                    leadingIcon = {
+//                        Icon(
+//                            Icons.Default.Search,
+//                            contentDescription = "Поиск",
+//                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+//                        )
+//                    },
+//                    trailingIcon = {
+//                        if (searchQuery.isNotEmpty()) {
+//                            IconButton(
+//                                onClick = { searchQuery = "" }
+//                            ) {
+//                                Icon(
+//                                    Icons.Default.Close,
+//                                    contentDescription = "Очистить",
+//                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+//                                )
+//                            }
+//                        }
+//                    }
 //                )
+//            }
+//        }
+
+            if (list.value!!.isNotEmpty()) {
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    items(list.value!!.size) { number ->
+                        val advertisement = list.value!![number]
+
+                        AdvertisementShortScreen(
+                            navController = navController,
+                            advertisementShort = AdvertisementShort(
+                                globalId = advertisement.id,
+                                price = advertisement.price,
+                                isFavorite = advertisement.isFavorite,
+                                sellerDiscount = advertisement.sellerDiscount,
+                                url = advertisement.url.first(),
+                                brand = advertisement.brand,
+                                name = advertisement.name
+                            )
+                        )
+                    }
+                }
+
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            enabled = true,
+                            onClick = {
+                                viewModel.getAdvertisementShortList(context)
+                            }
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Не удалось загрузить товары"
+                    )
+                }
             }
         }
-
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            items(8) {
-                AdvertisementShortScreen(
-                    price = 15999,
-                    isFavorite = true,
-                    sellerDiscount = 0.1f,
-                    url = URL_EXAMPLE,
-                    brand = "8 Horas of Silk",
-                    name = "Лонгслив"
-                )
-            }
+            CircularProgressIndicator(
+                color = Color.Blue
+            )
         }
-
     }
 
 
 }
-
-
 
 
 @Preview(showBackground = true)

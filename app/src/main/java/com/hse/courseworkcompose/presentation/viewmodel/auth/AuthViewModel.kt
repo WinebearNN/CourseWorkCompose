@@ -2,7 +2,6 @@ package com.hse.courseworkcompose.presentation.viewmodel.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hse.courseworkcompose.domain.entity.User
 import com.hse.courseworkcompose.domain.useCase.AuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
